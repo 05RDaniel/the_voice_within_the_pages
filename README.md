@@ -1,6 +1,8 @@
 # La Voz de las Páginas
 
-Aplicación web para convertir texto a voz y gestionar contenido.
+La Voz de las Páginas es una aplicación para la creación y gestión de proyectos narrativos. Permite a escritores organizar historias, personajes, mundos y tramas en un entorno estructurado, facilitando la coherencia y el desarrollo progresivo de universos narrativos.
+
+Está pensada como una alternativa a los editores de texto tradicionales, ofreciendo un flujo de trabajo orientado al proceso creativo completo, desde la idea inicial hasta una historia lista para ser compartida.
 
 ## 🚀 Stack Tecnológico
 
