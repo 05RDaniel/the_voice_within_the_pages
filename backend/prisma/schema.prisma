@@ -1,0 +1,69 @@
+// Prisma schema for La Voz de las Páginas
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  email        String    @unique
+  password     String
+  profileImage String?   @db.Text
+  content      Content[]
+  stories      Story[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Content {
+  id          String   @id @default(cuid())
+  title       String
+  text        String   @db.Text
+  audioUrl    String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, createdAt])
+}
+
+model Quote {
+  id        String   @id @default(cuid())
+  quote     String   @db.Text
+  author    String?
+  lang      String   @default("es")
+  createdAt DateTime @default(now())
+
+  @@index([lang])
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+  UNLISTED
+}
+
+model Story {
+  id         String     @id @default(cuid())
+  title      String
+  content    String     @db.Text
+  visibility Visibility @default(PRIVATE)
+  authorId   String
+  author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([authorId])
+  @@index([authorId, createdAt])
+  @@index([visibility])
+}
+
+
+

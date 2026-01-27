@@ -1,0 +1,572 @@
+.profile-container {
+  min-height: 100vh;
+  position: relative;
+}
+
+.profile-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 80px);
+}
+
+.profile-section {
+  background: #5a4a3a;
+  padding: 24px;
+  box-shadow: 
+    6px 6px 0 rgba(0, 0, 0, 0.3),
+    inset 0 0 15px rgba(0, 0, 0, 0.1);
+  border: 4px solid #2a1f0f;
+  position: relative;
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 0, 0, 0.04) 1px, rgba(0, 0, 0, 0.04) 2px);
+  max-width: 600px;
+  width: 100%;
+}
+
+[data-theme="light"] .profile-section {
+  background: #d4c4a8;
+  border: 4px solid #5a4a3a;
+}
+
+.profile-section h2 {
+  margin: 0 0 24px 0;
+  color: #d4c4a8;
+  font-size: 1.75rem;
+  font-family: Arial, sans-serif;
+  font-weight: 900;
+  transform: rotate(-0.2deg);
+}
+
+[data-theme="light"] .profile-section h2 {
+  color: #1a1a1a;
+}
+
+/* Profile Image Section */
+.profile-image-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.profile-image-container {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid #2a1f0f;
+  background: #6b5d4f;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .profile-image-container {
+  border-color: #5a4a3a;
+  background: #c4b498;
+}
+
+.profile-image-container:hover {
+  transform: scale(1.05);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
+}
+
+.profile-image-container.uploading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8b7355;
+  font-size: 3rem;
+}
+
+[data-theme="light"] .profile-image-placeholder {
+  color: #5a4a3a;
+}
+
+.profile-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.profile-image-container:hover .profile-image-overlay {
+  opacity: 1;
+}
+
+.upload-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.image-hint {
+  margin-top: 12px;
+  color: #8b7355;
+  font-size: 0.85rem;
+  font-style: italic;
+  font-family: Arial, sans-serif;
+}
+
+[data-theme="light"] .image-hint {
+  color: #5a4a3a;
+}
+
+.image-error {
+  margin-top: 8px;
+  color: #c45050;
+  font-size: 0.85rem;
+  font-family: Arial, sans-serif;
+  font-weight: 600;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-item label {
+  font-weight: 700;
+  color: #c4b498;
+  font-size: 0.9rem;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+}
+
+[data-theme="light"] .info-item label {
+  color: #3a2f1f;
+}
+
+.info-value {
+  color: #d4c4a8;
+  font-size: 1rem;
+  font-family: Arial, sans-serif;
+  padding: 10px 12px;
+  background: #6b5d4f;
+  border: 2px solid #2a1f0f;
+  box-shadow: 
+    inset 2px 2px 3px rgba(0, 0, 0, 0.2),
+    1px 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .info-value {
+  color: #1a1a1a;
+  background: #f0e6d0;
+  border: 2px solid #5a4a3a;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
+  color: #8b7355;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+  font-family: Arial, sans-serif;
+  font-style: italic;
+  font-weight: 700;
+}
+
+[data-theme="light"] .loading {
+  color: #3a2f1f;
+}
+
+/* Show Password Change Button */
+.show-password-change-button {
+  margin-top: 24px;
+  padding: 12px 24px;
+  background: #3a2f1f;
+  color: #d4c4a8;
+  border: 3px solid #1a0f0a;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.1s;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 
+    3px 3px 0 rgba(0, 0, 0, 0.3),
+    inset 1px 1px 2px rgba(0, 0, 0, 0.2);
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+[data-theme="light"] .show-password-change-button {
+  background: #6b5d4f;
+  color: #faf6ed;
+  border: 3px solid #3a2f1f;
+}
+
+.show-password-change-button:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 
+    2px 2px 0 rgba(0, 0, 0, 0.3),
+    inset 1px 1px 2px rgba(0, 0, 0, 0.2);
+  background: #2a1f0f;
+}
+
+[data-theme="light"] .show-password-change-button:hover {
+  background: #7b6d5f;
+}
+
+/* Password Section Card */
+.password-section {
+  max-width: 500px;
+}
+
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.password-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.password-form .form-group label {
+  font-weight: 700;
+  color: #c4b498;
+  font-size: 0.85rem;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+}
+
+[data-theme="light"] .password-form .form-group label {
+  color: #3a2f1f;
+}
+
+.password-form .form-group input {
+  padding: 10px 12px;
+  border: 3px solid #2a1f0f;
+  font-size: 1rem;
+  transition: all 0.1s;
+  background: #6b5d4f;
+  color: #d4c4a8;
+  box-shadow: 
+    inset 3px 3px 5px rgba(0, 0, 0, 0.2),
+    2px 2px 0 rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  width: 100%;
+}
+
+[data-theme="light"] .password-form .form-group input {
+  border: 3px solid #5a4a3a;
+  background: #f0e6d0;
+  color: #1a1a1a;
+}
+
+.password-form .form-group input::placeholder {
+  color: rgba(90, 74, 58, 0.5);
+  font-style: italic;
+}
+
+.password-form .form-group input:focus {
+  outline: none;
+  border-color: #1a0f0a;
+  box-shadow: 
+    inset 3px 3px 5px rgba(0, 0, 0, 0.3),
+    3px 3px 0 rgba(0, 0, 0, 0.2);
+  background: #8b7355;
+}
+
+[data-theme="light"] .password-form .form-group input:focus {
+  border-color: #3a2f1f;
+  background: #faf6ed;
+}
+
+.password-form .form-group input:disabled {
+  background: #5a4a3a;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.change-password-button {
+  padding: 10px 20px;
+  background: #3a2f1f;
+  color: #d4c4a8;
+  border: 3px solid #1a0f0a;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.1s;
+  margin-top: 8px;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 
+    3px 3px 0 rgba(0, 0, 0, 0.3),
+    inset 1px 1px 2px rgba(0, 0, 0, 0.2);
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+}
+
+[data-theme="light"] .change-password-button {
+  background: #6b5d4f;
+  color: #faf6ed;
+  border: 3px solid #3a2f1f;
+}
+
+.change-password-button:hover:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 
+    2px 2px 0 rgba(0, 0, 0, 0.3),
+    inset 1px 1px 2px rgba(0, 0, 0, 0.2);
+  background: #2a1f0f;
+}
+
+[data-theme="light"] .change-password-button:hover:not(:disabled) {
+  background: #7b6d5f;
+}
+
+.change-password-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.password-error {
+  background: #5a2a2a;
+  color: #e8c4c4;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  border: 2px solid #8b4a4a;
+  box-shadow: 
+    inset 2px 2px 3px rgba(0, 0, 0, 0.2),
+    2px 2px 0 rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  font-weight: 600;
+}
+
+.password-success {
+  background: #2a5a2a;
+  color: #c4e8c4;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  border: 2px solid #4a8b4a;
+  box-shadow: 
+    inset 2px 2px 3px rgba(0, 0, 0, 0.2),
+    2px 2px 0 rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  font-weight: 600;
+}
+
+.password-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.cancel-button {
+  flex: 1;
+  padding: 10px 20px;
+  background: #6b5d4f;
+  color: #d4c4a8;
+  border: 3px solid #2a1f0f;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.1s;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 
+    3px 3px 0 rgba(0, 0, 0, 0.3),
+    inset 1px 1px 2px rgba(0, 0, 0, 0.2);
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+}
+
+[data-theme="light"] .cancel-button {
+  background: #c4b498;
+  color: #3a2f1f;
+  border: 3px solid #5a4a3a;
+}
+
+.cancel-button:hover:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 
+    2px 2px 0 rgba(0, 0, 0, 0.3),
+    inset 1px 1px 2px rgba(0, 0, 0, 0.2);
+  background: #5a4a3a;
+}
+
+[data-theme="light"] .cancel-button:hover:not(:disabled) {
+  background: #b4a488;
+}
+
+.cancel-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.password-buttons .change-password-button {
+  flex: 1;
+  margin-top: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-main {
+    padding: 16px;
+    min-height: calc(100vh - 120px);
+  }
+
+  .profile-section {
+    max-width: 100%;
+    padding: 20px;
+  }
+
+  .profile-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+
+  .profile-info {
+    gap: 16px;
+  }
+
+  .info-item label {
+    font-size: 0.85rem;
+  }
+
+  .info-value {
+    font-size: 0.95rem;
+    padding: 8px 10px;
+  }
+
+  .show-password-change-button {
+    padding: 10px 20px;
+    font-size: 0.85rem;
+  }
+
+  .password-form .form-group input {
+    padding: 8px 10px;
+    font-size: 0.95rem;
+    border-width: 2px;
+  }
+
+  .password-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-main {
+    padding: 12px;
+    min-height: calc(100vh - 150px);
+  }
+
+  .profile-section {
+    padding: 16px;
+    border-width: 3px;
+  }
+
+  .profile-section h2 {
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+  }
+
+  .profile-info {
+    gap: 12px;
+  }
+
+  .info-item label {
+    font-size: 0.8rem;
+  }
+
+  .info-value {
+    font-size: 0.9rem;
+    padding: 8px;
+    border-width: 2px;
+  }
+
+  .loading {
+    font-size: 1rem;
+  }
+
+  .show-password-change-button {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+
+  .password-form {
+    gap: 12px;
+  }
+
+  .password-form .form-group label {
+    font-size: 0.75rem;
+  }
+
+  .password-form .form-group input {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .change-password-button,
+  .cancel-button {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+}
+

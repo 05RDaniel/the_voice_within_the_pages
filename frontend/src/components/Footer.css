@@ -1,0 +1,102 @@
+.app-footer {
+  background: #3a2f1f;
+  border-top: 4px solid #2a1f0f;
+  padding: 16px 24px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  box-shadow: 0 -4px 0 rgba(0, 0, 0, 0.2), inset 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .app-footer {
+  background: #8b7355;
+  border-top-color: #5a4a3a;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.quote-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: opacity 0.5s ease-in-out;
+  opacity: 1;
+}
+
+.quote-container.visible {
+  opacity: 1;
+}
+
+.quote-container.hidden {
+  opacity: 0;
+}
+
+.quote-text {
+  color: #c4b498;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .quote-text {
+  color: #faf6ed;
+}
+
+.quote-author {
+  color: #8b7355;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: Arial, sans-serif;
+}
+
+[data-theme="light"] .quote-author {
+  color: #d4c4a8;
+}
+
+.quote-loading {
+  color: #8b7355;
+  font-size: 1rem;
+  font-style: italic;
+}
+
+[data-theme="light"] .quote-loading {
+  color: #d4c4a8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-footer {
+    padding: 12px 16px;
+  }
+
+  .quote-text {
+    font-size: 0.85rem;
+  }
+
+  .quote-author {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-footer {
+    padding: 10px 12px;
+  }
+
+  .quote-text {
+    font-size: 0.8rem;
+  }
+
+  .quote-author {
+    font-size: 0.7rem;
+  }
+}
+
