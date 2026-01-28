@@ -8,6 +8,7 @@ import Profile from './pages/Profile';
 import Scriptorium from './pages/Scriptorium';
 import Stories from './pages/Stories';
 import StoryEditor from './pages/StoryEditor';
+import Plots from './pages/Plots';
 import './App.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/scriptorium" element={<Scriptorium />} />
           <Route path="/stories" element={<Stories />} />
           <Route path="/story/:id" element={<StoryEditor />} />
+          <Route path="/plots" element={<Plots />} />
         </Routes>
         </Router>
       </LanguageProvider>

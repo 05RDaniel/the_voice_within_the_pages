@@ -60,7 +60,7 @@ function Scriptorium() {
             <p>{t('charactersDescription')}</p>
           </div>
           
-          <div className="scriptorium-card">
+          <div className="scriptorium-card" onClick={() => navigate('/plots')}>
             <div className="card-icon">
               <i className="fa-solid fa-diagram-project"></i>
             </div>
