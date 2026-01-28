@@ -46,8 +46,8 @@ export const createPlot = async (req: Request, res: Response) => {
     const plot = await prisma.plot.create({
       data: {
         name,
-        start: parseInt(start),
-        end: parseInt(end),
+        start: parseFloat(start),
+        end: parseFloat(end),
         timelineId
       }
     });
@@ -96,8 +96,8 @@ export const updatePlot = async (req: Request, res: Response) => {
 
     const updateData: any = {};
     if (name) updateData.name = name;
-    if (start !== undefined) updateData.start = parseInt(start);
-    if (end !== undefined) updateData.end = parseInt(end);
+    if (start !== undefined) updateData.start = parseFloat(start);
+    if (end !== undefined) updateData.end = parseFloat(end);
 
     if (updateData.start && updateData.end && updateData.start > updateData.end) {
       return res.status(400).json({ error: "El inicio no puede ser mayor que el final" });

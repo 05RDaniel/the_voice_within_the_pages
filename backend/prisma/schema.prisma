@@ -81,8 +81,8 @@ model Timeline {
 model Plot {
   id         String   @id @default(cuid())
   name       String
-  start      Int
-  end        Int
+  start      Float
+  end        Float
   timelineId String
   timeline   Timeline @relation(fields: [timelineId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())

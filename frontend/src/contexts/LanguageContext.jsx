@@ -103,6 +103,7 @@ const translations = {
     startCantBeGreaterThanEnd: 'El inicio no puede ser mayor que el final',
     errorCreatingPlot: 'Error al crear la trama',
     creating: 'Creando...',
+    errorUpdatingPlot: 'Error al actualizar la trama',
     
     // Stories Page
     myStories: 'Mis Historias',
@@ -262,6 +263,7 @@ const translations = {
     startCantBeGreaterThanEnd: 'Start cannot be greater than end',
     errorCreatingPlot: 'Error creating plot',
     creating: 'Creating...',
+    errorUpdatingPlot: 'Error updating plot',
     
     // Stories Page
     myStories: 'My Stories',

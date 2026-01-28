@@ -329,6 +329,7 @@
   right: 0;
   height: 35px;
   z-index: 2;
+  user-select: none;
 }
 
 .timeline-plot-segment {
@@ -338,10 +339,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  cursor: grab;
   transition: all 0.2s;
   box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
   border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.timeline-plot-segment.dragging {
+  cursor: grabbing;
 }
 
 .timeline-plot-segment:hover {
@@ -360,6 +365,28 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   padding: 0 6px;
+}
+
+.plot-handle {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  cursor: ew-resize;
+  z-index: 3;
+}
+
+.plot-handle.left {
+  left: -3px;
+}
+
+.plot-handle.right {
+  right: -3px;
+}
+
+.timeline-plot-segment:hover .plot-handle {
+  background: rgba(0, 0, 0, 0.4);
 }
 
 /* Legend */
