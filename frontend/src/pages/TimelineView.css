@@ -85,6 +85,95 @@
   border-color: #5a4a3a;
 }
 
+/* Chapter Controls */
+.chapter-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.chapter-control-button {
+  background: #3a2f1f;
+  border: 2px solid #2a1f0f;
+  color: #d4c4a8;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.1s;
+  font-size: 1rem;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.chapter-control-button:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.chapter-control-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.chapter-control-button.add {
+  background: #2a5a2a;
+  border-color: #1a3a1a;
+}
+
+.chapter-control-button.add:hover:not(:disabled) {
+  background: #3a6a3a;
+}
+
+.chapter-control-button.remove {
+  background: #5a2a2a;
+  border-color: #3a1a1a;
+}
+
+.chapter-control-button.remove:hover:not(:disabled) {
+  background: #6a3a3a;
+}
+
+[data-theme="light"] .chapter-control-button {
+  background: #6b5d4f;
+  border-color: #3a2f1f;
+  color: #faf6ed;
+}
+
+[data-theme="light"] .chapter-control-button.add {
+  background: #4a8b4a;
+  border-color: #2a5a2a;
+}
+
+[data-theme="light"] .chapter-control-button.add:hover:not(:disabled) {
+  background: #5a9b5a;
+}
+
+[data-theme="light"] .chapter-control-button.remove {
+  background: #8b4a4a;
+  border-color: #5a2a2a;
+}
+
+[data-theme="light"] .chapter-control-button.remove:hover:not(:disabled) {
+  background: #9b5a5a;
+}
+
+.chapter-count {
+  color: #d4c4a8;
+  font-size: 1rem;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  min-width: 100px;
+  text-align: center;
+}
+
+[data-theme="light"] .chapter-count {
+  color: #2a1f0f;
+}
+
 /* Chapter Headers */
 .chapter-headers {
   display: flex;

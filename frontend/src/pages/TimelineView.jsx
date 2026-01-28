@@ -10,8 +10,17 @@ function TimelineView() {
   const [loading, setLoading] = useState(true);
   const [timeline, setTimeline] = useState(null);
   const [error, setError] = useState('');
+  const [chapterCount, setChapterCount] = useState(5);
   const { t } = useLanguage();
   const navigate = useNavigate();
+
+  // Calculate minimum chapters needed based on plots
+  const getMinChapters = () => {
+    if (!timeline || timeline.plots.length === 0) {
+      return 1;
+    }
+    return Math.max(...timeline.plots.map(p => p.end));
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,6 +36,11 @@ function TimelineView() {
           setError(timelineResponse.error);
         } else {
           setTimeline(timelineResponse.timeline);
+          // Set initial chapter count based on plots
+          const maxEnd = timelineResponse.timeline.plots.length > 0 
+            ? Math.max(...timelineResponse.timeline.plots.map(p => p.end))
+            : 5;
+          setChapterCount(Math.max(maxEnd, 5));
         }
       } catch (err) {
         console.error('Error:', err);
@@ -39,13 +53,17 @@ function TimelineView() {
     fetchData();
   }, [id, navigate, t]);
 
-  // Calculate number of chapters needed
-  const getChapterCount = () => {
-    if (!timeline || timeline.plots.length === 0) {
-      return 5; // Default 5 chapters
+  // Add chapter
+  const handleAddChapter = () => {
+    setChapterCount(prev => prev + 1);
+  };
+
+  // Remove chapter (only if no plots extend to that chapter)
+  const handleRemoveChapter = () => {
+    const minRequired = getMinChapters();
+    if (chapterCount > minRequired && chapterCount > 1) {
+      setChapterCount(prev => prev - 1);
     }
-    const maxEnd = Math.max(...timeline.plots.map(p => p.end));
-    return Math.max(maxEnd, 5); // At least 5 chapters
   };
 
   // Calculate position percentage for a chapter value (1-based)
@@ -97,8 +115,8 @@ function TimelineView() {
     );
   }
 
-  const chapterCount = getChapterCount();
   const chapters = getChapters(chapterCount);
+  const minChapters = getMinChapters();
 
   return (
     <div className="timeline-view-container">
@@ -119,6 +137,26 @@ function TimelineView() {
         </div>
 
         <div className="timeline-schematic">
+          {/* Chapter controls */}
+          <div className="chapter-controls">
+            <button 
+              className="chapter-control-button remove"
+              onClick={handleRemoveChapter}
+              disabled={chapterCount <= minChapters || chapterCount <= 1}
+              title={t('removeChapter')}
+            >
+              <i className="fa-solid fa-minus"></i>
+            </button>
+            <span className="chapter-count">{chapterCount} {chapterCount === 1 ? t('chapterSingular') : t('chapters')}</span>
+            <button 
+              className="chapter-control-button add"
+              onClick={handleAddChapter}
+              title={t('addChapter')}
+            >
+              <i className="fa-solid fa-plus"></i>
+            </button>
+          </div>
+
           {/* Chapter headers */}
           <div className="chapter-headers">
             {chapters.map((chapter) => (

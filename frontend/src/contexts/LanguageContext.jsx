@@ -90,6 +90,10 @@ const translations = {
     noPlotsYet: 'Aún no hay tramas',
     addPlotsToTimeline: 'Añade tramas a esta línea temporal',
     chapter: 'Cap.',
+    chapters: 'capítulos',
+    chapterSingular: 'capítulo',
+    addChapter: 'Añadir capítulo',
+    removeChapter: 'Eliminar capítulo',
     
     // Stories Page
     myStories: 'Mis Historias',
@@ -236,6 +240,10 @@ const translations = {
     noPlotsYet: 'No plots yet',
     addPlotsToTimeline: 'Add plots to this timeline',
     chapter: 'Ch.',
+    chapters: 'chapters',
+    chapterSingular: 'chapter',
+    addChapter: 'Add chapter',
+    removeChapter: 'Remove chapter',
     
     // Stories Page
     myStories: 'My Stories',
