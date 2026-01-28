@@ -74,9 +74,10 @@
 /* Timeline Schematic */
 .timeline-schematic {
   background: #5a4a3a;
-  padding: 40px;
+  padding: 30px 20px;
   border: 3px solid #2a1f0f;
   box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
+  overflow-x: auto;
 }
 
 [data-theme="light"] .timeline-schematic {
@@ -84,10 +85,103 @@
   border-color: #5a4a3a;
 }
 
+/* Chapter Headers */
+.chapter-headers {
+  display: flex;
+  margin-bottom: 8px;
+  min-width: 600px;
+}
+
+.chapter-header {
+  text-align: center;
+  border-left: 2px solid #2a1f0f;
+}
+
+.chapter-header:last-child {
+  border-right: 2px solid #2a1f0f;
+}
+
+[data-theme="light"] .chapter-header {
+  border-left-color: #5a4a3a;
+}
+
+[data-theme="light"] .chapter-header:last-child {
+  border-right-color: #5a4a3a;
+}
+
+.chapter-label {
+  color: #d4c4a8;
+  font-size: 0.8rem;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+[data-theme="light"] .chapter-label {
+  color: #2a1f0f;
+}
+
 .timeline-axis {
   position: relative;
-  height: 120px;
+  height: 100px;
   margin-bottom: 30px;
+  min-width: 600px;
+}
+
+/* Chapter Divisions */
+.chapter-divisions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+}
+
+.chapter-section {
+  position: relative;
+  border-left: 2px solid #2a1f0f;
+  height: 100%;
+}
+
+.chapter-section:last-child {
+  border-right: 2px solid #2a1f0f;
+}
+
+[data-theme="light"] .chapter-section {
+  border-left-color: #5a4a3a;
+}
+
+[data-theme="light"] .chapter-section:last-child {
+  border-right-color: #5a4a3a;
+}
+
+/* Quarter Divisions */
+.quarter-divisions {
+  display: flex;
+  height: 100%;
+}
+
+.quarter-section {
+  flex: 1;
+  position: relative;
+}
+
+.quarter-line {
+  position: absolute;
+  right: 0;
+  top: 35%;
+  height: 30%;
+  width: 1px;
+  background: rgba(139, 115, 85, 0.5);
+}
+
+.quarter-section:last-child .quarter-line {
+  display: none;
+}
+
+[data-theme="light"] .quarter-line {
+  background: rgba(90, 74, 58, 0.4);
 }
 
 .timeline-line {
@@ -95,61 +189,24 @@
   top: 50%;
   left: 0;
   right: 0;
-  height: 4px;
+  height: 3px;
   background: #2a1f0f;
   transform: translateY(-50%);
+  z-index: 1;
 }
 
 [data-theme="light"] .timeline-line {
   background: #5a4a3a;
 }
 
-/* Markers */
-.timeline-markers {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  transform: translateY(-50%);
-}
-
-.timeline-marker {
-  position: absolute;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.marker-tick {
-  width: 2px;
-  height: 16px;
-  background: #2a1f0f;
-  margin-bottom: 8px;
-}
-
-[data-theme="light"] .marker-tick {
-  background: #5a4a3a;
-}
-
-.marker-label {
-  color: #8b7355;
-  font-size: 0.8rem;
-  font-family: Arial, sans-serif;
-  font-weight: 600;
-}
-
-[data-theme="light"] .marker-label {
-  color: #5a4a3a;
-}
-
 /* Plot Segments */
 .timeline-plots {
   position: absolute;
-  top: 20px;
+  top: 15px;
   left: 0;
   right: 0;
-  height: 40px;
+  height: 35px;
+  z-index: 2;
 }
 
 .timeline-plot-segment {
@@ -168,18 +225,19 @@
 .timeline-plot-segment:hover {
   transform: translateY(-3px);
   box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+  z-index: 10;
 }
 
 .plot-segment-label {
   color: #fff;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-family: Arial, sans-serif;
   font-weight: 700;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 0 8px;
+  padding: 0 6px;
 }
 
 /* Legend */

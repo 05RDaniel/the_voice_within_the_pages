@@ -89,6 +89,7 @@ const translations = {
     backToTimelines: 'Volver a líneas temporales',
     noPlotsYet: 'Aún no hay tramas',
     addPlotsToTimeline: 'Añade tramas a esta línea temporal',
+    chapter: 'Cap.',
     
     // Stories Page
     myStories: 'Mis Historias',
@@ -234,6 +235,7 @@ const translations = {
     backToTimelines: 'Back to timelines',
     noPlotsYet: 'No plots yet',
     addPlotsToTimeline: 'Add plots to this timeline',
+    chapter: 'Ch.',
     
     // Stories Page
     myStories: 'My Stories',

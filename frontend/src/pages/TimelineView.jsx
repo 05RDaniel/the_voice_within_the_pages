@@ -39,25 +39,23 @@ function TimelineView() {
     fetchData();
   }, [id, navigate, t]);
 
-  // Calculate timeline bounds
-  const getTimelineBounds = () => {
+  // Calculate number of chapters needed
+  const getChapterCount = () => {
     if (!timeline || timeline.plots.length === 0) {
-      return { min: 0, max: 100 };
+      return 5; // Default 5 chapters
     }
-    const starts = timeline.plots.map(p => p.start);
-    const ends = timeline.plots.map(p => p.end);
-    const min = Math.min(...starts);
-    const max = Math.max(...ends);
-    // Add some padding
-    const padding = Math.max((max - min) * 0.1, 5);
-    return { min: min - padding, max: max + padding };
+    const maxEnd = Math.max(...timeline.plots.map(p => p.end));
+    return Math.max(maxEnd, 5); // At least 5 chapters
   };
 
-  // Calculate position percentage for a value
-  const getPosition = (value, bounds) => {
-    const range = bounds.max - bounds.min;
-    if (range === 0) return 50;
-    return ((value - bounds.min) / range) * 100;
+  // Calculate position percentage for a chapter value (1-based)
+  const getPosition = (value, totalChapters) => {
+    return ((value - 1) / totalChapters) * 100;
+  };
+
+  // Calculate width percentage for a range
+  const getWidth = (start, end, totalChapters) => {
+    return ((end - start + 1) / totalChapters) * 100;
   };
 
   // Generate colors for plots
@@ -67,6 +65,11 @@ function TimelineView() {
       '#a050c4', '#50c4a0', '#c47050', '#5070c4'
     ];
     return colors[index % colors.length];
+  };
+
+  // Generate chapters array
+  const getChapters = (count) => {
+    return Array.from({ length: count }, (_, i) => i + 1);
   };
 
   if (loading) {
@@ -94,7 +97,8 @@ function TimelineView() {
     );
   }
 
-  const bounds = getTimelineBounds();
+  const chapterCount = getChapterCount();
+  const chapters = getChapters(chapterCount);
 
   return (
     <div className="timeline-view-container">
@@ -115,31 +119,48 @@ function TimelineView() {
         </div>
 
         <div className="timeline-schematic">
+          {/* Chapter headers */}
+          <div className="chapter-headers">
+            {chapters.map((chapter) => (
+              <div 
+                key={chapter} 
+                className="chapter-header"
+                style={{ width: `${100 / chapterCount}%` }}
+              >
+                <span className="chapter-label">{t('chapter')} {chapter}</span>
+              </div>
+            ))}
+          </div>
+
           <div className="timeline-axis">
-            <div className="timeline-line"></div>
-            
-            {/* Timeline markers */}
-            <div className="timeline-markers">
-              {[0, 25, 50, 75, 100].map((percent) => {
-                const value = Math.round(bounds.min + (bounds.max - bounds.min) * (percent / 100));
-                return (
-                  <div 
-                    key={percent} 
-                    className="timeline-marker"
-                    style={{ left: `${percent}%` }}
-                  >
-                    <div className="marker-tick"></div>
-                    <span className="marker-label">{value}</span>
+            {/* Chapter divisions */}
+            <div className="chapter-divisions">
+              {chapters.map((chapter) => (
+                <div 
+                  key={chapter} 
+                  className="chapter-section"
+                  style={{ width: `${100 / chapterCount}%` }}
+                >
+                  {/* Quarter divisions */}
+                  <div className="quarter-divisions">
+                    {[0, 1, 2, 3].map((quarter) => (
+                      <div key={quarter} className="quarter-section">
+                        <div className="quarter-line"></div>
+                      </div>
+                    ))}
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
+
+            {/* Main timeline line */}
+            <div className="timeline-line"></div>
 
             {/* Plots on timeline */}
             <div className="timeline-plots">
               {timeline.plots.map((plot, index) => {
-                const left = getPosition(plot.start, bounds);
-                const width = getPosition(plot.end, bounds) - left;
+                const left = getPosition(plot.start, chapterCount);
+                const width = getWidth(plot.start, plot.end, chapterCount);
                 const color = getPlotColor(index);
                 
                 return (
@@ -151,7 +172,7 @@ function TimelineView() {
                       width: `${Math.max(width, 2)}%`,
                       backgroundColor: color,
                     }}
-                    title={`${plot.name}: ${plot.start} - ${plot.end}`}
+                    title={`${plot.name}: ${t('chapter')} ${plot.start} - ${plot.end}`}
                   >
                     <span className="plot-segment-label">{plot.name}</span>
                   </div>
@@ -170,7 +191,7 @@ function TimelineView() {
                     style={{ backgroundColor: getPlotColor(index) }}
                   ></span>
                   <span className="legend-name">{plot.name}</span>
-                  <span className="legend-range">{plot.start} - {plot.end}</span>
+                  <span className="legend-range">{t('chapter')} {plot.start} - {plot.end}</span>
                 </div>
               ))}
             </div>
