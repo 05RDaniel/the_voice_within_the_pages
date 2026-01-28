@@ -53,6 +53,9 @@ export const createStory = async (req: Request, res: Response) => {
         content: content || '',
         visibility: storyVisibility,
         authorId: userId,
+        timelines: {
+          create: {}
+        }
       },
       select: {
         id: true,
@@ -61,6 +64,11 @@ export const createStory = async (req: Request, res: Response) => {
         visibility: true,
         createdAt: true,
         updatedAt: true,
+        timelines: {
+          select: {
+            id: true,
+          }
+        }
       },
     });
 
