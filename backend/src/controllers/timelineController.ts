@@ -96,7 +96,7 @@ export const createTimeline = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "No autenticado" });
     }
 
-    const { storyId } = req.body;
+    const { storyId, name } = req.body;
 
     if (!storyId) {
       return res.status(400).json({ error: "El ID de la historia es requerido" });
@@ -117,7 +117,8 @@ export const createTimeline = async (req: Request, res: Response) => {
 
     const timeline = await prisma.timeline.create({
       data: {
-        storyId
+        storyId,
+        name: name || undefined
       },
       include: {
         story: {

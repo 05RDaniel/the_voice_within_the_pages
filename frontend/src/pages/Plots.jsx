@@ -68,7 +68,8 @@ function Plots() {
                 onClick={() => navigate(`/timeline/${timeline.id}`)}
               >
                 <div className="timeline-header">
-                  <h3 className="timeline-story-title">{timeline.story.title}</h3>
+                  <h3 className="timeline-name">{timeline.name}</h3>
+                  <span className="timeline-story-title">{timeline.story.title}</span>
                 </div>
                 <div className="timeline-info">
                   <span className="timeline-plots-count">

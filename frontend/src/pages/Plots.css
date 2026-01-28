@@ -102,19 +102,33 @@
   margin-bottom: 16px;
 }
 
-.timeline-story-title {
+.timeline-name {
   color: #d4c4a8;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-family: Arial, sans-serif;
   font-weight: 700;
-  margin: 0;
+  margin: 0 0 6px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-theme="light"] .timeline-name {
+  color: #2a1f0f;
+}
+
+.timeline-story-title {
+  color: #8b7355;
+  font-size: 0.85rem;
+  font-family: Arial, sans-serif;
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 [data-theme="light"] .timeline-story-title {
-  color: #2a1f0f;
+  color: #5a4a3a;
 }
 
 .timeline-info {

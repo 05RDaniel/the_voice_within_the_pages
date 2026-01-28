@@ -68,6 +68,7 @@ model Story {
 
 model Timeline {
   id        String   @id @default(cuid())
+  name      String   @default("Línea temporal principal")
   storyId   String
   story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
   plots     Plot[]
