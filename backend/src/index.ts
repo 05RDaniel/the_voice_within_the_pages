@@ -26,16 +26,22 @@ app.use(cors({
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
+// Trust proxy for Render
+app.set('trust proxy', 1);
+
 // Session configuration
+const isProduction = process.env.NODE_ENV === "production";
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "la-voz-de-las-paginas-secret-key",
     resave: false,
     saveUninitialized: false,
+    proxy: isProduction,
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: isProduction,
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      sameSite: isProduction ? "none" : "lax",
     },
   })
 );
