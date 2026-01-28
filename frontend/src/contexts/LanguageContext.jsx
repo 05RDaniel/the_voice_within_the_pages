@@ -84,6 +84,11 @@ const translations = {
     errorLoadingTimelines: 'Error al cargar las líneas temporales',
     noTimelinesYet: 'Aún no tienes líneas temporales',
     createStoryForTimeline: 'Crea una historia para generar una línea temporal',
+    errorLoadingTimeline: 'Error al cargar la línea temporal',
+    timelineNotFound: 'Línea temporal no encontrada',
+    backToTimelines: 'Volver a líneas temporales',
+    noPlotsYet: 'Aún no hay tramas',
+    addPlotsToTimeline: 'Añade tramas a esta línea temporal',
     
     // Stories Page
     myStories: 'Mis Historias',
@@ -224,6 +229,11 @@ const translations = {
     errorLoadingTimelines: 'Error loading timelines',
     noTimelinesYet: "You don't have any timelines yet",
     createStoryForTimeline: 'Create a story to generate a timeline',
+    errorLoadingTimeline: 'Error loading timeline',
+    timelineNotFound: 'Timeline not found',
+    backToTimelines: 'Back to timelines',
+    noPlotsYet: 'No plots yet',
+    addPlotsToTimeline: 'Add plots to this timeline',
     
     // Stories Page
     myStories: 'My Stories',

@@ -9,6 +9,7 @@ import Scriptorium from './pages/Scriptorium';
 import Stories from './pages/Stories';
 import StoryEditor from './pages/StoryEditor';
 import Plots from './pages/Plots';
+import TimelineView from './pages/TimelineView';
 import './App.css';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="/stories" element={<Stories />} />
           <Route path="/story/:id" element={<StoryEditor />} />
           <Route path="/plots" element={<Plots />} />
+          <Route path="/timeline/:id" element={<TimelineView />} />
         </Routes>
         </Router>
       </LanguageProvider>

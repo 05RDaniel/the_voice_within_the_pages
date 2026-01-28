@@ -1,0 +1,417 @@
+.timeline-view-container {
+  min-height: 100vh;
+  position: relative;
+}
+
+.timeline-view-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
+.timeline-view-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.timeline-back-button {
+  background: transparent;
+  border: 2px solid #5a4a3a;
+  color: #c4b498;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 10px 14px;
+  transition: all 0.1s;
+  border-radius: 2px;
+}
+
+.timeline-back-button:hover {
+  background: #5a4a3a;
+  color: #d4c4a8;
+}
+
+[data-theme="light"] .timeline-back-button {
+  border-color: #8b7355;
+  color: #5a4a3a;
+}
+
+[data-theme="light"] .timeline-back-button:hover {
+  background: #c4b498;
+  color: #2a1f0f;
+}
+
+.timeline-view-info {
+  flex: 1;
+}
+
+.timeline-view-title {
+  color: #d4c4a8;
+  font-size: 1.8rem;
+  font-family: Arial, sans-serif;
+  font-weight: 900;
+  margin: 0 0 4px 0;
+}
+
+[data-theme="light"] .timeline-view-title {
+  color: #2a1f0f;
+}
+
+.timeline-view-story {
+  color: #8b7355;
+  font-size: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+[data-theme="light"] .timeline-view-story {
+  color: #5a4a3a;
+}
+
+/* Timeline Schematic */
+.timeline-schematic {
+  background: #5a4a3a;
+  padding: 40px;
+  border: 3px solid #2a1f0f;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .timeline-schematic {
+  background: #d4c4a8;
+  border-color: #5a4a3a;
+}
+
+.timeline-axis {
+  position: relative;
+  height: 120px;
+  margin-bottom: 30px;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #2a1f0f;
+  transform: translateY(-50%);
+}
+
+[data-theme="light"] .timeline-line {
+  background: #5a4a3a;
+}
+
+/* Markers */
+.timeline-markers {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+}
+
+.timeline-marker {
+  position: absolute;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.marker-tick {
+  width: 2px;
+  height: 16px;
+  background: #2a1f0f;
+  margin-bottom: 8px;
+}
+
+[data-theme="light"] .marker-tick {
+  background: #5a4a3a;
+}
+
+.marker-label {
+  color: #8b7355;
+  font-size: 0.8rem;
+  font-family: Arial, sans-serif;
+  font-weight: 600;
+}
+
+[data-theme="light"] .marker-label {
+  color: #5a4a3a;
+}
+
+/* Plot Segments */
+.timeline-plots {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  height: 40px;
+}
+
+.timeline-plot-segment {
+  position: absolute;
+  height: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.timeline-plot-segment:hover {
+  transform: translateY(-3px);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.plot-segment-label {
+  color: #fff;
+  font-size: 0.75rem;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 8px;
+}
+
+/* Legend */
+.timeline-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 2px solid #2a1f0f;
+}
+
+[data-theme="light"] .timeline-legend {
+  border-top-color: #5a4a3a;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.legend-name {
+  color: #d4c4a8;
+  font-size: 0.9rem;
+  font-family: Arial, sans-serif;
+  font-weight: 600;
+}
+
+[data-theme="light"] .legend-name {
+  color: #2a1f0f;
+}
+
+.legend-range {
+  color: #8b7355;
+  font-size: 0.8rem;
+  font-family: Arial, sans-serif;
+}
+
+[data-theme="light"] .legend-range {
+  color: #5a4a3a;
+}
+
+/* No Plots */
+.no-plots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.no-plots i {
+  font-size: 3rem;
+  color: #6b5d4f;
+  margin-bottom: 16px;
+}
+
+[data-theme="light"] .no-plots i {
+  color: #8b7355;
+}
+
+.no-plots p {
+  color: #c4b498;
+  font-size: 1.1rem;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+[data-theme="light"] .no-plots p {
+  color: #3a2f1f;
+}
+
+.no-plots span {
+  color: #8b7355;
+  font-size: 0.9rem;
+  font-family: Arial, sans-serif;
+}
+
+/* Error Page */
+.timeline-error-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: #c4b498;
+  text-align: center;
+  padding: 24px;
+}
+
+.timeline-error-page i {
+  font-size: 4rem;
+  margin-bottom: 24px;
+  color: #c45050;
+}
+
+.timeline-error-page p {
+  font-size: 1.2rem;
+  margin-bottom: 24px;
+  font-family: Arial, sans-serif;
+}
+
+.timeline-error-page .back-button {
+  padding: 12px 24px;
+  background: #3a2f1f;
+  color: #d4c4a8;
+  border: 3px solid #1a0f0a;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+  transition: all 0.1s;
+}
+
+.timeline-error-page .back-button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
+  color: #8b7355;
+  font-family: Arial, sans-serif;
+  font-style: italic;
+  font-weight: 700;
+}
+
+[data-theme="light"] .loading {
+  color: #3a2f1f;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .timeline-view-main {
+    padding: 16px;
+  }
+
+  .timeline-view-header {
+    margin-bottom: 24px;
+  }
+
+  .timeline-view-title {
+    font-size: 1.4rem;
+  }
+
+  .timeline-schematic {
+    padding: 24px 16px;
+  }
+
+  .timeline-axis {
+    height: 100px;
+  }
+
+  .timeline-plots {
+    top: 15px;
+    height: 35px;
+  }
+
+  .plot-segment-label {
+    font-size: 0.65rem;
+  }
+
+  .timeline-legend {
+    gap: 12px;
+  }
+
+  .legend-name {
+    font-size: 0.85rem;
+  }
+
+  .legend-range {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .timeline-view-main {
+    padding: 12px;
+  }
+
+  .timeline-back-button {
+    padding: 8px 12px;
+    font-size: 1rem;
+  }
+
+  .timeline-view-title {
+    font-size: 1.2rem;
+  }
+
+  .timeline-view-story {
+    font-size: 0.9rem;
+  }
+
+  .timeline-schematic {
+    padding: 20px 12px;
+  }
+
+  .timeline-axis {
+    height: 90px;
+  }
+
+  .marker-label {
+    font-size: 0.7rem;
+  }
+
+  .timeline-plots {
+    top: 12px;
+    height: 30px;
+  }
+
+  .plot-segment-label {
+    font-size: 0.6rem;
+    padding: 0 4px;
+  }
+
+  .timeline-legend {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
