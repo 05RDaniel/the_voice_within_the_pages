@@ -49,6 +49,39 @@
   flex: 1;
 }
 
+.new-plot-button {
+  background: #3a2f1f;
+  color: #d4c4a8;
+  border: 3px solid #1a0f0a;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.1s;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.new-plot-button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+  background: #2a1f0f;
+}
+
+[data-theme="light"] .new-plot-button {
+  background: #6b5d4f;
+  color: #faf6ed;
+  border-color: #3a2f1f;
+}
+
+[data-theme="light"] .new-plot-button:hover {
+  background: #5a4a3a;
+}
+
 .timeline-view-title {
   color: #d4c4a8;
   font-size: 1.8rem;
@@ -560,5 +593,210 @@
   .timeline-legend {
     flex-direction: column;
     gap: 8px;
+  }
+
+  .new-plot-button {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  .new-plot-button span {
+    display: none;
+  }
+}
+
+/* Plot Modal */
+.plot-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.plot-modal {
+  background: #5a4a3a;
+  border: 4px solid #2a1f0f;
+  padding: 24px;
+  max-width: 450px;
+  width: 100%;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="light"] .plot-modal {
+  background: #d4c4a8;
+  border-color: #5a4a3a;
+}
+
+.plot-modal h2 {
+  color: #d4c4a8;
+  font-size: 1.4rem;
+  font-family: Arial, sans-serif;
+  font-weight: 900;
+  margin: 0 0 20px 0;
+}
+
+[data-theme="light"] .plot-modal h2 {
+  color: #2a1f0f;
+}
+
+.plot-modal .form-group {
+  margin-bottom: 16px;
+}
+
+.plot-modal .form-group label {
+  display: block;
+  color: #c4b498;
+  font-size: 0.85rem;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+[data-theme="light"] .plot-modal .form-group label {
+  color: #3a2f1f;
+}
+
+.plot-modal .form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 3px solid #2a1f0f;
+  background: #6b5d4f;
+  color: #d4c4a8;
+  font-size: 1rem;
+  font-family: Arial, sans-serif;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.plot-modal .form-group input:focus {
+  outline: none;
+  border-color: #1a0f0a;
+  background: #7b6d5f;
+}
+
+[data-theme="light"] .plot-modal .form-group input {
+  border-color: #5a4a3a;
+  background: #f0e6d0;
+  color: #1a1a1a;
+}
+
+[data-theme="light"] .plot-modal .form-group input:focus {
+  border-color: #3a2f1f;
+  background: #faf6ed;
+}
+
+.plot-modal .form-group input::placeholder {
+  color: rgba(196, 180, 152, 0.5);
+  font-style: italic;
+}
+
+[data-theme="light"] .plot-modal .form-group input::placeholder {
+  color: rgba(90, 74, 58, 0.5);
+}
+
+.plot-modal .form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.plot-modal .form-row .form-group {
+  flex: 1;
+}
+
+.plot-error {
+  background: #5a2a2a;
+  color: #e8c4c4;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  border: 2px solid #8b4a4a;
+  margin-bottom: 16px;
+  font-family: Arial, sans-serif;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.modal-buttons .cancel-button {
+  flex: 1;
+  padding: 10px 20px;
+  background: #6b5d4f;
+  color: #d4c4a8;
+  border: 3px solid #2a1f0f;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  transition: all 0.1s;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.modal-buttons .cancel-button:hover:not(:disabled) {
+  background: #5a4a3a;
+}
+
+[data-theme="light"] .modal-buttons .cancel-button {
+  background: #c4b498;
+  color: #3a2f1f;
+  border-color: #5a4a3a;
+}
+
+.modal-buttons .create-button {
+  flex: 1;
+  padding: 10px 20px;
+  background: #3a2f1f;
+  color: #d4c4a8;
+  border: 3px solid #1a0f0a;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  transition: all 0.1s;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.modal-buttons .create-button:hover:not(:disabled) {
+  background: #2a1f0f;
+}
+
+.modal-buttons .create-button:disabled,
+.modal-buttons .cancel-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+[data-theme="light"] .modal-buttons .create-button {
+  background: #6b5d4f;
+  color: #faf6ed;
+  border-color: #3a2f1f;
+}
+
+@media (max-width: 480px) {
+  .plot-modal {
+    padding: 20px;
+  }
+
+  .plot-modal h2 {
+    font-size: 1.2rem;
+  }
+
+  .plot-modal .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
   }
 }

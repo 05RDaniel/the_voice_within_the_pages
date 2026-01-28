@@ -94,6 +94,15 @@ const translations = {
     chapterSingular: 'capítulo',
     addChapter: 'Añadir capítulo',
     removeChapter: 'Eliminar capítulo',
+    newPlot: 'Nueva trama',
+    plotName: 'Nombre de la trama',
+    plotNamePlaceholder: 'Ej: Romance principal',
+    startChapter: 'Capítulo inicial',
+    endChapter: 'Capítulo final',
+    plotNameRequired: 'El nombre de la trama es requerido',
+    startCantBeGreaterThanEnd: 'El inicio no puede ser mayor que el final',
+    errorCreatingPlot: 'Error al crear la trama',
+    creating: 'Creando...',
     
     // Stories Page
     myStories: 'Mis Historias',
@@ -244,6 +253,15 @@ const translations = {
     chapterSingular: 'chapter',
     addChapter: 'Add chapter',
     removeChapter: 'Remove chapter',
+    newPlot: 'New plot',
+    plotName: 'Plot name',
+    plotNamePlaceholder: 'E.g.: Main romance',
+    startChapter: 'Start chapter',
+    endChapter: 'End chapter',
+    plotNameRequired: 'Plot name is required',
+    startCantBeGreaterThanEnd: 'Start cannot be greater than end',
+    errorCreatingPlot: 'Error creating plot',
+    creating: 'Creating...',
     
     // Stories Page
     myStories: 'My Stories',

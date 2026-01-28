@@ -11,6 +11,10 @@ function TimelineView() {
   const [timeline, setTimeline] = useState(null);
   const [error, setError] = useState('');
   const [chapterCount, setChapterCount] = useState(5);
+  const [showNewPlotModal, setShowNewPlotModal] = useState(false);
+  const [newPlot, setNewPlot] = useState({ name: '', start: 1, end: 1 });
+  const [creating, setCreating] = useState(false);
+  const [plotError, setPlotError] = useState('');
   const { t } = useLanguage();
   const navigate = useNavigate();
 
@@ -20,6 +24,23 @@ function TimelineView() {
       return 1;
     }
     return Math.max(...timeline.plots.map(p => p.end));
+  };
+
+  const fetchTimeline = async () => {
+    try {
+      const timelineResponse = await api.get(`/api/timelines/${id}`);
+      if (timelineResponse.error) {
+        setError(timelineResponse.error);
+      } else {
+        setTimeline(timelineResponse.timeline);
+        const maxEnd = timelineResponse.timeline.plots.length > 0 
+          ? Math.max(...timelineResponse.timeline.plots.map(p => p.end))
+          : 5;
+        setChapterCount(prev => Math.max(prev, maxEnd));
+      }
+    } catch (err) {
+      console.error('Error:', err);
+    }
   };
 
   useEffect(() => {
@@ -36,7 +57,6 @@ function TimelineView() {
           setError(timelineResponse.error);
         } else {
           setTimeline(timelineResponse.timeline);
-          // Set initial chapter count based on plots
           const maxEnd = timelineResponse.timeline.plots.length > 0 
             ? Math.max(...timelineResponse.timeline.plots.map(p => p.end))
             : 5;
@@ -63,6 +83,46 @@ function TimelineView() {
     const minRequired = getMinChapters();
     if (chapterCount > minRequired && chapterCount > 1) {
       setChapterCount(prev => prev - 1);
+    }
+  };
+
+  // Create new plot
+  const handleCreatePlot = async (e) => {
+    e.preventDefault();
+    setPlotError('');
+
+    if (!newPlot.name.trim()) {
+      setPlotError(t('plotNameRequired'));
+      return;
+    }
+
+    if (newPlot.start > newPlot.end) {
+      setPlotError(t('startCantBeGreaterThanEnd'));
+      return;
+    }
+
+    setCreating(true);
+    try {
+      const response = await api.post('/api/plots', {
+        timelineId: id,
+        name: newPlot.name.trim(),
+        start: newPlot.start,
+        end: newPlot.end
+      });
+
+      if (response.error) {
+        setPlotError(response.error);
+      } else {
+        setShowNewPlotModal(false);
+        setNewPlot({ name: '', start: 1, end: 1 });
+        // Refresh timeline
+        await fetchTimeline();
+      }
+    } catch (err) {
+      console.error('Error creating plot:', err);
+      setPlotError(t('errorCreatingPlot'));
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -134,6 +194,13 @@ function TimelineView() {
             <h1 className="timeline-view-title">{timeline.name}</h1>
             <span className="timeline-view-story">{timeline.story.title}</span>
           </div>
+          <button 
+            className="new-plot-button"
+            onClick={() => setShowNewPlotModal(true)}
+          >
+            <i className="fa-solid fa-plus"></i>
+            {t('newPlot')}
+          </button>
         </div>
 
         <div className="timeline-schematic">
@@ -244,6 +311,70 @@ function TimelineView() {
           )}
         </div>
       </main>
+
+      {/* New Plot Modal */}
+      {showNewPlotModal && (
+        <div className="plot-modal-overlay" onClick={() => setShowNewPlotModal(false)}>
+          <div className="plot-modal" onClick={(e) => e.stopPropagation()}>
+            <h2>{t('newPlot')}</h2>
+            <form onSubmit={handleCreatePlot}>
+              <div className="form-group">
+                <label>{t('plotName')}</label>
+                <input
+                  type="text"
+                  value={newPlot.name}
+                  onChange={(e) => setNewPlot({ ...newPlot, name: e.target.value })}
+                  placeholder={t('plotNamePlaceholder')}
+                  disabled={creating}
+                  autoFocus
+                />
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>{t('startChapter')}</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max={chapterCount}
+                    value={newPlot.start}
+                    onChange={(e) => setNewPlot({ ...newPlot, start: parseInt(e.target.value) || 1 })}
+                    disabled={creating}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>{t('endChapter')}</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max={chapterCount}
+                    value={newPlot.end}
+                    onChange={(e) => setNewPlot({ ...newPlot, end: parseInt(e.target.value) || 1 })}
+                    disabled={creating}
+                  />
+                </div>
+              </div>
+              {plotError && <p className="plot-error">{plotError}</p>}
+              <div className="modal-buttons">
+                <button 
+                  type="button" 
+                  className="cancel-button"
+                  onClick={() => setShowNewPlotModal(false)}
+                  disabled={creating}
+                >
+                  {t('cancel')}
+                </button>
+                <button 
+                  type="submit" 
+                  className="create-button"
+                  disabled={creating}
+                >
+                  {creating ? t('creating') : t('create')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
