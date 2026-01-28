@@ -437,7 +437,7 @@ function StoryEditor() {
         <div className="word-count">
           <span>{getWordCount()} {t('words')}</span>
           <span className="separator">|</span>
-          <span>{getCharCount()} {t('characters')}</span>
+          <span>{getCharCount()} {t('chars')}</span>
         </div>
         <div className="editor-footer-right">
           <button className="save-button" onClick={handleSave} disabled={saving || saved}>

@@ -111,7 +111,7 @@ const translations = {
     settings: 'Configuración',
     startWriting: 'Comienza a escribir tu historia...',
     words: 'palabras',
-    characters: 'caracteres',
+    chars: 'caracteres',
     save: 'Guardar',
     
     // Formatting Toolbar
@@ -244,7 +244,7 @@ const translations = {
     settings: 'Settings',
     startWriting: 'Start writing your story...',
     words: 'words',
-    characters: 'characters',
+    chars: 'characters',
     save: 'Save',
     
     // Formatting Toolbar
