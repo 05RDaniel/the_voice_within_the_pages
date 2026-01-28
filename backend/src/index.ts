@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes";
 import contentRoutes from "./routes/contentRoutes";
 import quoteRoutes from "./routes/quoteRoutes";
 import storyRoutes from "./routes/storyRoutes";
+import timelineRoutes from "./routes/timelineRoutes";
 
 dotenv.config();
 
@@ -57,6 +58,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/content", contentRoutes);
 app.use("/api/quotes", quoteRoutes);
 app.use("/api/stories", storyRoutes);
+app.use("/api/timelines", timelineRoutes);
 
 // Error handling
 app.use((err: unknown, req: express.Request, res: express.Response, next: express.NextFunction) => {
