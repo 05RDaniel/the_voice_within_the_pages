@@ -74,7 +74,7 @@ export const createStory = async (req: Request, res: Response) => {
 export const getStory = async (req: Request, res: Response) => {
   try {
     const userId = (req.session as any)?.userId;
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     const story = await prisma.story.findUnique({
       where: { id },
@@ -112,7 +112,7 @@ export const updateStory = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "No autenticado" });
     }
 
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { title, content, visibility } = req.body;
 
     // Check if story exists and belongs to user
@@ -166,7 +166,7 @@ export const deleteStory = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "No autenticado" });
     }
 
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     // Check if story exists and belongs to user
     const existingStory = await prisma.story.findUnique({
