@@ -78,6 +78,13 @@ const translations = {
     plots: 'Tramas',
     plotsDescription: 'Diseña las estructuras narrativas de tus historias. Organiza los eventos, giros y desenlaces.',
     
+    // Plots/Timelines Page
+    timelines: 'Líneas Temporales',
+    plot: 'trama',
+    errorLoadingTimelines: 'Error al cargar las líneas temporales',
+    noTimelinesYet: 'Aún no tienes líneas temporales',
+    createStoryForTimeline: 'Crea una historia para generar una línea temporal',
+    
     // Stories Page
     myStories: 'Mis Historias',
     newStory: 'Nueva Historia',
@@ -210,6 +217,13 @@ const translations = {
     charactersDescription: 'Bring your protagonists and antagonists to life. Define their traits, motivations, and development arcs.',
     plots: 'Plots',
     plotsDescription: 'Design the narrative structures of your stories. Organize events, twists, and endings.',
+    
+    // Plots/Timelines Page
+    timelines: 'Timelines',
+    plot: 'plot',
+    errorLoadingTimelines: 'Error loading timelines',
+    noTimelinesYet: "You don't have any timelines yet",
+    createStoryForTimeline: 'Create a story to generate a timeline',
     
     // Stories Page
     myStories: 'My Stories',

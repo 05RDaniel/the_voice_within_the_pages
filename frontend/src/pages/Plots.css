@@ -11,6 +11,135 @@
   z-index: 1;
 }
 
+.plots-title {
+  color: #d4c4a8;
+  font-size: 2rem;
+  font-family: Arial, sans-serif;
+  font-weight: 900;
+  margin: 0 0 32px 0;
+  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .plots-title {
+  color: #2a1f0f;
+}
+
+.plots-error {
+  background: #5a2a2a;
+  color: #e8c4c4;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  font-size: 0.9rem;
+  border: 2px solid #8b4a4a;
+  font-family: Arial, sans-serif;
+}
+
+/* No Timelines */
+.no-timelines {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+}
+
+.no-timelines i {
+  font-size: 4rem;
+  color: #6b5d4f;
+  margin-bottom: 24px;
+}
+
+[data-theme="light"] .no-timelines i {
+  color: #8b7355;
+}
+
+.no-timelines p {
+  color: #c4b498;
+  font-size: 1.3rem;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+[data-theme="light"] .no-timelines p {
+  color: #3a2f1f;
+}
+
+.no-timelines span {
+  color: #8b7355;
+  font-size: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+/* Timelines Grid */
+.timelines-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.timeline-card {
+  background: #5a4a3a;
+  padding: 20px;
+  border: 3px solid #2a1f0f;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+[data-theme="light"] .timeline-card {
+  background: #d4c4a8;
+  border-color: #5a4a3a;
+}
+
+.timeline-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.3);
+}
+
+.timeline-header {
+  margin-bottom: 16px;
+}
+
+.timeline-story-title {
+  color: #d4c4a8;
+  font-size: 1.2rem;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-theme="light"] .timeline-story-title {
+  color: #2a1f0f;
+}
+
+.timeline-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.timeline-plots-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8b7355;
+  font-size: 0.9rem;
+  font-family: Arial, sans-serif;
+}
+
+.timeline-plots-count i {
+  font-size: 0.85rem;
+}
+
+[data-theme="light"] .timeline-plots-count {
+  color: #5a4a3a;
+}
+
 .loading {
   display: flex;
   align-items: center;
@@ -33,10 +162,44 @@
   .plots-main {
     padding: 16px;
   }
+
+  .plots-title {
+    font-size: 1.6rem;
+    margin-bottom: 24px;
+  }
+
+  .timelines-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .no-timelines {
+    padding: 40px 16px;
+  }
+
+  .no-timelines i {
+    font-size: 3rem;
+  }
+
+  .no-timelines p {
+    font-size: 1.1rem;
+  }
 }
 
 @media (max-width: 480px) {
   .plots-main {
     padding: 12px;
+  }
+
+  .plots-title {
+    font-size: 1.4rem;
+  }
+
+  .timeline-card {
+    padding: 16px;
+  }
+
+  .timeline-story-title {
+    font-size: 1.1rem;
   }
 }
