@@ -1,20 +1,20 @@
-# La Voz de las Páginas
+# La voz de las páginas / The voice within the pages
 
-**La Voz de las Páginas** — A narrative project manager for writers: stories, timelines, plots, and content with optional text-to-speech.
+**La voz de las páginas** (es) / **The voice within the pages** (en) — A narrative project manager for writers: stories, timelines, plots, and content.
 
 ## Highlights
 
-- Narrative workspace: create and edit stories, attach timelines and plots (time ranges), and manage content with optional audio.
+- Narrative workspace: create and edit stories (plain-text editor with chapter separators), attach timelines and plots, manage characters per story.
 - Separate React (Vite) frontend and Express (TypeScript) backend; session-based auth and REST API.
-- PostgreSQL + Prisma; domain model with User, Story, Timeline, Plot, Content, and Quote.
-- Suited for ongoing development (MVP/prototype); deployable to Vercel (frontend) and Render (backend).
+- PostgreSQL + Prisma; domain model with User, Story, Timeline, Plot, Character, Note, and Quote.
+- Email verification on signup (6-digit code). Deployable to Vercel (frontend) and Render (backend).
 
 ---
 
 ## Project Overview
 
 **What it is**  
-La Voz de las Páginas is a web application for creating and managing narrative projects. Writers can organize stories, define timelines and plots (events with start/end positions), store content (with optional audio), and control story visibility (public, private, unlisted). Users have profiles and session-based access.
+The voice within the pages is a web application for creating and managing narrative projects. Writers can organize stories (with chapter separators in plain text), define timelines and plots (events with start/end), manage characters per story, and control visibility (public, private, unlisted). Users have profiles, email verification on signup, and session-based access.
 
 **What problem it solves**  
 It offers an alternative to plain text editors by providing a structured workflow for the full creative process: from initial idea to a coherent story with timelines and plots, without locking you into a single document.
@@ -27,16 +27,17 @@ Personal / ongoing project for learning and practicing full-stack development an
 ## Project Status
 
 **Current state**  
-Ongoing MVP / prototype. Core flows work: auth, stories CRUD, timelines and plots per story, content management, quotes (e.g. for UI), profile and password change.
+Ongoing MVP / prototype. Core flows work: auth with email verification, stories CRUD, timelines and plots per story, characters per story, plain-text story editor with chapter separators, profile and password change.
 
 **Actual scope**  
-- User registration, login, logout, profile (including profile image and change password).  
-- Stories: create, list, get, update, delete; visibility (PUBLIC, PRIVATE, UNLISTED).  
+- User registration (with email verification by 6-digit code), login, logout, profile (profile image and change password).  
+- Stories: create, list, get, update, delete; single plain-text `content` field; visibility (PUBLIC, PRIVATE, UNLISTED). Chapter separators use the tag `<separator>Title</separator>`; parser and “Add separator” button in editor.  
+- Story overview: side panels for timelines (left) and characters (right), central area for future content.  
+- Characters: name, description; CRUD per story from story overview.  
 - Timelines: one default per story; create/list/update/delete.  
-- Plots: name, description, start/end (float), color; attached to a timeline.  
-- Content: title, text, optional audio URL; per user.  
-- Quotes: public, by language; used for UI (e.g. random quote).  
-- Frontend: React + Vite, React Router, theme/language contexts; pages for Home, Login, Register, Profile, Stories, Story Editor, Scriptorium (content), Plots, Timeline view.
+- Plots and notes: on a timeline (plots = ranges by chapter; notes = single-point markers).  
+- Quotes: by language; used in footer (random quote).  
+- Frontend: React + Vite, React Router, theme/language contexts; Home, Login, Register, Verify email, Profile, Scriptorium, Stories, Story overview, Story editor, Plots, Timeline view.
 
 ---
 
@@ -46,7 +47,7 @@ Ongoing MVP / prototype. Core flows work: auth, stories CRUD, timelines and plot
 - **Stories** — Full CRUD; rich text content; visibility (public, private, unlisted).
 - **Timelines** — One or more per story; default timeline created with each story.
 - **Plots** — Events on a timeline with name, description, start/end (float), and optional color.
-- **Content** — User-owned entries with title, text, and optional audio URL (e.g. for text-to-speech).
+- **Content** — User-owned entries with title and text.
 - **Quotes** — Stored by language; public API for UI (e.g. random quote).
 - **UI** — Responsive layout; theme and language context; Scriptorium, Plots, and Timeline views.
 
@@ -70,10 +71,10 @@ User, Story, Timeline, Plot, Content, Quote (and enums such as Visibility).
 ## Architecture Overview
 
 - **Frontend / backend split**: `frontend/` (React SPA) and `backend/` (Express API) are separate apps. Frontend calls backend over HTTP with `credentials: 'include'` for session cookies.
-- **Communication**: REST API under `/api/*` (auth, content, quotes, stories, timelines, plots). CORS is configured for the frontend origin(s); session cookie is sameSite in production when needed (e.g. cross-origin Vercel ↔ Render).
+- **Communication**: REST API under `/api/*` (auth, stories, characters, timelines, plots, notes, quotes). CORS configured for frontend origin(s); session cookie used in production (e.g. Vercel ↔ Render).
 - **Responsibilities**:  
-  - **Frontend**: UI, routing, theme/language; all data via `lib/api.js` (get/post/put/delete).  
-  - **Backend**: Auth (login, register, logout, me, profile, change password), CRUD for stories/timelines/plots/content/quotes; middleware `requireAuth` for protected routes; Prisma for DB access.
+  - **Frontend**: UI, routing, theme/language; data via `lib/api.js` (get/post/put/delete).  
+  - **Backend**: Auth (register with email verification, login, logout, me, profile, change password), CRUD for stories/characters/timelines/plots/notes; middleware `requireAuth`; Prisma for DB.
 
 ---
 
@@ -82,7 +83,7 @@ User, Story, Timeline, Plot, Content, Quote (and enums such as Visibility).
 - **React + Vite** — Fast dev experience and simple build; no Next.js so backend stays fully separate.
 - **Express + TypeScript** — Clear API surface and type-safe backend; session stored in server memory (or configured store) with cookie id.
 - **Session-based auth** — Cookie-backed session (no JWT in the default setup); `requireAuth` checks `req.session.userId`; passwords hashed with bcrypt; validation and normalization (email, username) in auth controller.
-- **Domain model** — Story as the central artifact; Timeline belongs to Story; Plot belongs to Timeline (start/end as floats for ordering/positioning). Content and Quote are separate resources (Content per user, Quote global by lang).
+- **Domain model** — Story as the central artifact (plain-text content with `<separator>` tags for chapters); Timeline belongs to Story; Plot and Note belong to Timeline; Character belongs to Story. Quote is global by language.
 
 ---
 
@@ -100,14 +101,15 @@ User, Story, Timeline, Plot, Content, Quote (and enums such as Visibility).
 ## Project Structure
 
 ```
-la-voz-de-las-paginas/
+the-voice-within-the-pages/
 ├── frontend/                 # React SPA (Vite)
 │   ├── public/               # Static assets
 │   ├── src/
 │   │   ├── components/      # Header, Footer
 │   │   ├── contexts/        # Theme, Language
 │   │   ├── lib/             # api.js (API client)
-│   │   ├── pages/           # Home, Login, Register, Profile, Stories, StoryEditor, Scriptorium, Plots, TimelineView
+│   │   ├── pages/           # Home, Login, Register, VerifyEmail, Profile, Stories, StoryOverview, StoryEditor, Scriptorium, Plots, TimelineView
+│   │   ├── utils/           # chapterParser
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   ├── index.html
@@ -117,10 +119,10 @@ la-voz-de-las-paginas/
 │   │   ├── schema.prisma    # User, Content, Quote, Story, Timeline, Plot
 │   │   └── migrations/
 │   ├── src/
-│   │   ├── controllers/     # auth, content, plot, quote, story, timeline
+│   │   ├── controllers/     # auth, story, character, timeline, plot, note, quote
 │   │   ├── lib/             # prisma.ts
 │   │   ├── middleware/     # auth (requireAuth)
-│   │   ├── routes/         # auth, content, plot, quote, story, timeline
+│   │   ├── routes/         # auth, story, character, timeline, plot, note, quote
 │   │   ├── utils/           # passwordUtils
 │   │   └── index.ts        # Express app, CORS, session, routes
 │   └── scripts/             # createUser, seedQuotes
@@ -201,26 +203,28 @@ This runs frontend and backend concurrently.
 **Main entities**
 
 - **User** — `id`, `username` (unique), `email` (unique), `password` (hashed), `profileImage` (optional), timestamps.
-- **Content** — `id`, `title`, `text`, `audioUrl` (optional), `userId`, timestamps.
+- **Content** — `id`, `title`, `text`, `userId`, timestamps.
 - **Quote** — `id`, `quote`, `author` (optional), `lang` (default `"es"`), timestamps.
-- **Story** — `id`, `title`, `content` (text), `visibility` (PUBLIC | PRIVATE | UNLISTED), `authorId`, timestamps.
-- **Timeline** — `id`, `name` (default “Línea temporal principal”), `storyId`, timestamps.
-- **Plot** — `id`, `name`, `description` (optional), `start`, `end` (floats), `color` (optional), `timelineId`, timestamps.
+- **Story** — `id`, `title`, `content` (plain text; chapters via `<separator>Title</separator>`), `visibility`, `authorId`, timestamps.
+- **Timeline** — `id`, `name`, `storyId`, timestamps.
+- **Plot** — `id`, `name`, `description`, `start`, `end` (chapter positions), `color`, `timelineId`, timestamps.
+- **Note** — `id`, `name`, `chapterPosition`, `timelineId`, timestamps.
+- **Character** — `id`, `name`, `description`, `storyId`, timestamps.
 
 **Relations**
 
-- **User → Content**: One-to-many.
 - **User → Story**: One-to-many (author).
-- **Story → Timeline**: One-to-many; cascade on delete.
-- **Timeline → Plot**: One-to-many; cascade on delete.
+- **Story → Timeline**, **Story → Character**: One-to-many; cascade on delete.
+- **Timeline → Plot**, **Timeline → Note**: One-to-many; cascade on delete.
 
 **Indexes**
 
-- Content: `userId`, `(userId, createdAt)`.
 - Quote: `lang`.
 - Story: `authorId`, `(authorId, createdAt)`, `visibility`.
 - Timeline: `storyId`.
 - Plot: `timelineId`.
+- Note: `timelineId`.
+- Character: `storyId`.
 
 ---
 
@@ -231,8 +235,9 @@ Session-based (express-session). The server stores the session and sends a sessi
 
 **Flow**
 
-1. **Register** — POST with username, email, password; validation and normalization; uniqueness check; bcrypt hash; create User; set `req.session.userId` (and optionally userEmail/username); return user payload.
-2. **Login** — POST with usernameOrEmail and password; find user by email or username; verify password with bcrypt; set session; return user payload.
+1. **Register** — POST with username, email, password; validation and uniqueness; bcrypt hash; create User (unverified); send 6-digit verification code by email; user must enter code to verify before logging in.
+2. **Verify** — POST with email and code; mark user verified; redirect to login with success message.
+3. **Login** — POST with usernameOrEmail and password; find user; reject if not verified; verify password with bcrypt; set session; return user payload.
 3. **Protected routes** — Middleware `requireAuth` checks `req.session.userId`; if missing, responds 401.
 4. **Logout** — Session destroyed; cookie cleared; 200 with message.
 5. **Profile** — GET /api/auth/me returns current user; PATCH-style endpoints for profile image and change password (current password required).
@@ -270,8 +275,8 @@ Frontend uses `credentials: 'include'` so the session cookie is sent with every 
 
 ## Future Improvements / Roadmap
 
-- **Features**: Text-to-speech integration for content; export story/timeline (e.g. PDF or Markdown); collaboration or sharing of stories; versioning or drafts for stories.
-- **Technical**: Optional session store (e.g. Redis) for production scaling; rate limiting on auth; optional OAuth; stricter validation (e.g. Zod) on all API bodies; E2E tests.
+- **Features**: Export story (e.g. PDF or Markdown); styled preview of story with separator styling; collaboration or sharing; versioning or drafts.
+- **Technical**: Optional session store (e.g. Redis) for production; rate limiting on auth; optional OAuth; E2E tests.
 
 ---
 

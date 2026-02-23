@@ -26,14 +26,27 @@ export const getMyTimelines = async (req: Request, res: Response) => {
           select: {
             id: true,
             name: true,
+            description: true,
             start: true,
             end: true,
-          }
+            color: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: "asc" }
+        },
+        notes: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            position: true,
+            color: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: "asc" }
         }
       },
-      orderBy: {
-        createdAt: "desc"
-      }
+      orderBy: { createdAt: "desc" }
     });
 
     res.json({ timelines });
@@ -62,12 +75,24 @@ export const getTimeline = async (req: Request, res: Response) => {
           select: {
             id: true,
             name: true,
+            description: true,
             start: true,
             end: true,
+            color: true,
+            createdAt: true,
           },
-          orderBy: {
-            start: "asc"
-          }
+          orderBy: { createdAt: "asc" }
+        },
+        notes: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            position: true,
+            color: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: "asc" }
         }
       }
     });

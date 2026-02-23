@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useLayout } from '../contexts/LayoutContext';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 import './Profile.css';
 
 function Profile() {
@@ -11,11 +13,17 @@ function Profile() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const { language, t } = useLanguage();
+  const { setPageTitle, setBackUrl } = useLayout();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   
   // View state: 'profile' or 'password'
   const [currentView, setCurrentView] = useState('profile');
+
+  useEffect(() => {
+    setPageTitle(t('profileTitle'));
+    setBackUrl(null);
+  }, [t, setPageTitle, setBackUrl]);
   
   // Password change state
   const [passwordData, setPasswordData] = useState({
@@ -191,10 +199,52 @@ function Profile() {
     <div className="profile-container">
       <Header />
 
-      <main className="profile-main">
+      <div className="page-main profile-main">
+        <div className="page-subheader profile-header">
+          <button
+            type="button"
+            className="page-back-button"
+            onClick={() => navigate('/home')}
+            title={t('back')}
+            aria-label={t('back')}
+          >
+            <i className="fa-solid fa-arrow-left"></i>
+          </button>
+          <div className="page-subheader-title">
+            <h1>{currentView === 'profile' ? t('profileTitle') : t('changePassword')}</h1>
+          </div>
+          <div className="page-subheader-actions" />
+        </div>
+        <div className="profile-layout">
+          <aside className="profile-aside">
+            <div className="profile-aside-card">
+              <h3 className="profile-aside-card-title">{t('account')}</h3>
+              <ul className="profile-aside-list">
+                <li>
+                  <button
+                    type="button"
+                    className={`profile-aside-link ${currentView === 'profile' ? 'active' : ''}`}
+                    onClick={() => setCurrentView('profile')}
+                  >
+                    <i className="fa-solid fa-user"></i> {t('profileTitle')}
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    className={`profile-aside-link ${currentView === 'password' ? 'active' : ''}`}
+                    onClick={handleShowPasswordChange}
+                  >
+                    <i className="fa-solid fa-key"></i> {t('changePassword')}
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </aside>
+          <main className="profile-main-content">
+            <div className="page-content">
         {currentView === 'profile' ? (
           <section className="profile-section">
-            <h2>{t('profileTitle')}</h2>
             
             <div className="profile-image-section">
               <div 
@@ -265,8 +315,6 @@ function Profile() {
           </section>
         ) : (
           <section className="profile-section password-section">
-            <h2>{t('changePassword')}</h2>
-            
             <form onSubmit={handlePasswordSubmit} className="password-form">
               {passwordError && <div className="password-error">{passwordError}</div>}
               {passwordSuccess && <div className="password-success">{passwordSuccess}</div>}
@@ -329,7 +377,11 @@ function Profile() {
             </form>
           </section>
         )}
-      </main>
+            </div>
+          </main>
+        </div>
+      </div>
+      <Footer />
     </div>
   );
 }

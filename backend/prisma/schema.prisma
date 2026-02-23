@@ -1,4 +1,4 @@
-// Prisma schema for La Voz de las Páginas
+// Prisma schema for The voice within the pages
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,26 +9,30 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  username     String    @unique
-  email        String    @unique
-  password     String
-  profileImage String?   @db.Text
-  content      Content[]
-  stories      Story[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id                              String    @id @default(cuid())
+  username                        String    @unique
+  email                           String    @unique
+  password                        String
+  profileImage                    String?   @db.Text
+  emailVerified                   Boolean   @default(false)
+  emailVerificationToken          String?   @unique
+  emailVerificationTokenExpiresAt DateTime?
+  content                         Content[]
+  stories                         Story[]
+  createdAt                       DateTime  @default(now())
+  updatedAt                       DateTime  @updatedAt
+
+  @@index([emailVerificationToken])
 }
 
 model Content {
-  id          String   @id @default(cuid())
-  title       String
-  text        String   @db.Text
-  audioUrl    String?
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  title     String
+  text      String   @db.Text
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([userId, createdAt])
@@ -53,11 +57,12 @@ enum Visibility {
 model Story {
   id         String     @id @default(cuid())
   title      String
-  content    String     @db.Text
   visibility Visibility @default(PRIVATE)
+  content    String?     @db.Text
   authorId   String
   author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   timelines  Timeline[]
+  characters Character[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
 
@@ -66,27 +71,56 @@ model Story {
   @@index([visibility])
 }
 
+model Character {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  storyId     String
+  story       Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([storyId])
+}
+
 model Timeline {
   id        String   @id @default(cuid())
   name      String   @default("Línea temporal principal")
   storyId   String
   story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
   plots     Plot[]
+  notes     Note[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([storyId])
 }
 
+model Note {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  position    Float    // chapter position (e.g. 2.5 = mid chapter 2)
+  color       String?  // hex color
+  timelineId  String
+  timeline    Timeline @relation(fields: [timelineId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([timelineId])
+}
+
 model Plot {
-  id         String   @id @default(cuid())
-  name       String
-  start      Float
-  end        Float
-  timelineId String
-  timeline   Timeline @relation(fields: [timelineId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  start       Float
+  end         Float
+  color       String?  // hex color, e.g. #8b7355
+  timelineId  String
+  timeline    Timeline @relation(fields: [timelineId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([timelineId])
 }

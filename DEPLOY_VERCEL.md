@@ -1,6 +1,6 @@
 # Despliegue del Frontend en Vercel
 
-Esta guía explica cómo desplegar el frontend de "La Voz de las Páginas" en Vercel.
+Esta guía explica cómo desplegar el frontend de "La voz de las páginas" en Vercel.
 
 ## Requisitos Previos
 

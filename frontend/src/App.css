@@ -2,3 +2,83 @@
 .App {
   min-height: 100vh;
 }
+
+/* Shared page layout (Header + Main 90% + optional sub-header + content) */
+.page-main {
+  width: 90%;
+  margin: 0 auto;
+  padding: 32px 24px 32px 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.page-subheader {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.page-subheader .page-back-button {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 2px solid #5a4a3a;
+  color: #c4b498;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.1s;
+  border-radius: 2px;
+}
+
+.page-subheader .page-back-button:hover {
+  background: #5a4a3a;
+  color: #d4c4a8;
+}
+
+[data-theme="light"] .page-subheader .page-back-button {
+  border-color: #8b7355;
+  color: #5a4a3a;
+}
+
+[data-theme="light"] .page-subheader .page-back-button:hover {
+  background: #c4b498;
+  color: #2a1f0f;
+}
+
+.page-subheader-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+}
+
+.page-subheader-title h1,
+.page-subheader .page-title {
+  font-size: 1.8rem;
+  margin: 0;
+  text-align: center;
+  color: #d4c4a8;
+  font-family: Arial, sans-serif;
+  font-weight: 900;
+}
+
+[data-theme="light"] .page-subheader-title h1,
+[data-theme="light"] .page-subheader .page-title {
+  color: #2a1f0f;
+}
+
+.page-subheader-actions {
+  min-width: 44px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.page-content {
+  /* Optional wrapper for content below sub-header */
+}

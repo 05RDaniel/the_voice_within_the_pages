@@ -1,29 +1,17 @@
 .scriptorium-container {
   min-height: 100vh;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .scriptorium-main {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 48px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   position: relative;
   z-index: 1;
-}
-
-.scriptorium-title {
-  text-align: center;
-  color: #d4c4a8;
-  font-size: 2.5rem;
-  font-family: Arial, sans-serif;
-  font-weight: 900;
-  margin-bottom: 48px;
-  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
-  transform: rotate(-0.3deg);
-}
-
-[data-theme="light"] .scriptorium-title {
-  color: #2a1f0f;
 }
 
 .scriptorium-cards {

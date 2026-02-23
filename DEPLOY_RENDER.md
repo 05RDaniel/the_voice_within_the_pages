@@ -1,6 +1,6 @@
 # Despliegue del Backend en Render
 
-Esta guía explica cómo desplegar el backend de "La Voz de las Páginas" en Render.
+Esta guía explica cómo desplegar el backend de "La voz de las páginas" en Render.
 
 ## Requisitos Previos
 

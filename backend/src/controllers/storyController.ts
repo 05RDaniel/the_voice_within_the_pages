@@ -15,7 +15,6 @@ export const getMyStories = async (req: Request, res: Response) => {
       select: {
         id: true,
         title: true,
-        content: true,
         visibility: true,
         createdAt: true,
         updatedAt: true,
@@ -93,6 +92,14 @@ export const getStory = async (req: Request, res: Response) => {
             username: true,
           },
         },
+        timelines: {
+          select: {
+            id: true,
+            name: true,
+            _count: { select: { plots: true, notes: true } },
+          },
+        },
+        characters: true,
       },
     });
 
@@ -121,7 +128,7 @@ export const updateStory = async (req: Request, res: Response) => {
     }
 
     const id = req.params.id as string;
-    const { title, content, visibility } = req.body;
+    const { title, visibility, content } = req.body;
 
     // Check if story exists and belongs to user
     const existingStory = await prisma.story.findUnique({
@@ -141,7 +148,6 @@ export const updateStory = async (req: Request, res: Response) => {
     const updateData: any = {};
     
     if (title) updateData.title = title;
-    if (content) updateData.content = content;
     if (visibility && validVisibilities.includes(visibility)) {
       updateData.visibility = visibility;
     }
@@ -152,8 +158,8 @@ export const updateStory = async (req: Request, res: Response) => {
       select: {
         id: true,
         title: true,
-        content: true,
         visibility: true,
+        content: true,
         createdAt: true,
         updatedAt: true,
       },

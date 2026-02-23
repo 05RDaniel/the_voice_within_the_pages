@@ -1,4 +1,4 @@
-# La Voz de las Páginas - Backend
+# La voz de las páginas - Backend
 
 API REST construida con Express.js, TypeScript, PostgreSQL y Prisma.
 
@@ -66,7 +66,7 @@ El proyecto está preparado para usar tanto **Session-based** como **JWT**.
 ## 🗄️ Modelos de Base de Datos
 
 - **User**: Usuarios del sistema
-- **Content**: Contenido de texto con opción de audio
+- **Content**: Contenido de texto por usuario
 
 
 

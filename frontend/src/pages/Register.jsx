@@ -1,10 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import '../components/Header.css';
+import './Login.css';
 import './Register.css';
+
+const LANGUAGES = [
+  { code: 'es', label: 'Español' },
+  { code: 'en', label: 'English' },
+];
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -15,9 +21,25 @@ function Register() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [registered, setRegistered] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verifyLoading, setVerifyLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [verifyError, setVerifyError] = useState('');
+  const [resendMessage, setResendMessage] = useState('');
+  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const { language, toggleLanguage, t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!languageDropdownOpen) return;
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.login-language-wrap')) setLanguageDropdownOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [languageDropdownOpen]);
 
   const translateError = (errorMsg) => {
     const errorMap = {
@@ -58,6 +80,8 @@ function Register() {
       
       if (response.error) {
         setError(translateError(response.error));
+      } else if (response.needsVerification) {
+        setRegistered(true);
       } else {
         navigate('/home');
       }
@@ -69,98 +93,247 @@ function Register() {
     }
   };
 
+  const handleVerifyCode = async (e) => {
+    e.preventDefault();
+    setVerifyError('');
+    setResendMessage('');
+    const codeStr = verificationCode.replace(/\D/g, '').slice(0, 6);
+    if (codeStr.length !== 6) {
+      setVerifyError(t('codeMustBe6Digits'));
+      return;
+    }
+    setVerifyLoading(true);
+    try {
+      const data = await api.post('/api/auth/verify-email', {
+        email: formData.email,
+        code: codeStr,
+      });
+      if (data.error) {
+        setVerifyError(data.error);
+        return;
+      }
+      setVerifySuccess(true);
+    } catch (err) {
+      setVerifyError(t('verificationFailed'));
+    } finally {
+      setVerifyLoading(false);
+    }
+  };
+
+  const handleResendCode = async (e) => {
+    e.preventDefault();
+    setVerifyError('');
+    setResendMessage('');
+    setResendLoading(true);
+    try {
+      const data = await api.post('/api/auth/resend-verification', { email: formData.email });
+      if (data.error) {
+        setResendMessage(data.error);
+      } else {
+        setResendMessage(t('verificationEmailSent'));
+      }
+    } catch (err) {
+      setResendMessage(t('registerError'));
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
   return (
-    <div className="register-container">
-      <div className="register-wrapper">
-        <div className="register-card">
-          <div className="register-buttons">
-            <button onClick={toggleTheme} className="theme-toggle-button" title={theme === 'dark' ? t('lightMode') : t('darkMode')}>
+    <div className="login-container">
+      <div className="login-wrapper">
+        <div className="login-ambient" aria-hidden="true">
+          <div className="login-glow login-glow-1" />
+          <div className="login-glow login-glow-2" />
+          <div className="login-glow login-glow-3" />
+          <div className="login-dust" />
+        </div>
+        <div className="login-manuscript">
+          <div className="login-buttons">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="login-action-btn"
+              title={theme === 'dark' ? t('lightMode') : t('darkMode')}
+              aria-label={theme === 'dark' ? t('lightMode') : t('darkMode')}
+            >
               {theme === 'dark' ? '☀️' : '🌙'}
             </button>
-            <button onClick={toggleLanguage} className="lang-toggle-button" title={language === 'es' ? 'English' : 'Español'}>
-              {language === 'es' ? 'EN' : 'ES'}
-            </button>
+            <div className="login-language-wrap">
+              <button
+                type="button"
+                className="login-action-btn"
+                onClick={() => setLanguageDropdownOpen((o) => !o)}
+                title={t('languageLabel')}
+                aria-expanded={languageDropdownOpen}
+                aria-haspopup="true"
+              >
+                <i className="fa-solid fa-language" />
+              </button>
+              {languageDropdownOpen && (
+                <ul className="login-language-dropdown" role="menu">
+                  {LANGUAGES.map(({ code, label }) => (
+                    <li key={code} role="none">
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className={`login-language-option ${language === code ? 'active' : ''}`}
+                        onClick={() => {
+                          setLanguage(code);
+                          setLanguageDropdownOpen(false);
+                        }}
+                      >
+                        {label}
+                        {language === code && <i className="fa-solid fa-check" />}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
-          <div className="register-header">
-            <h1>{t('registerTitle')}</h1>
-            <p>{t('registerSubtitle')}</p>
-          </div>
-
-          {error && <div className="error-message">{error}</div>}
-
-          <form onSubmit={handleSubmit} className="register-form">
-            <div className="form-group">
-              <label htmlFor="username">{t('username')}</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                required
-                disabled={loading}
-                minLength={3}
-                maxLength={20}
-                pattern="[a-zA-Z0-9_-]+"
-              />
-              <small className="form-hint">{t('usernameHint')}</small>
+          <div className="login-manuscript-inner">
+            <div className="login-manuscript-corner login-manuscript-corner-tl" aria-hidden="true" />
+            <div className="login-manuscript-corner login-manuscript-corner-tr" aria-hidden="true" />
+            <div className="login-manuscript-corner login-manuscript-corner-bl" aria-hidden="true" />
+            <div className="login-manuscript-corner login-manuscript-corner-br" aria-hidden="true" />
+            <div className="login-header">
+              <h1>{t('registerTitle')}</h1>
+              <p>{t('registerSubtitle')}</p>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="email">{t('email')}</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                disabled={loading}
-              />
-            </div>
+            {error && <div className="login-error-message">{error}</div>}
 
-            <div className="form-group">
-              <label htmlFor="password">{t('password')}</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                placeholder="••••••••"
-                disabled={loading}
-              />
-            </div>
+            {registered ? (
+              <div className="register-verify-block">
+                  <>
+                    <p className="register-verify-intro">{t('checkEmailForCode')}</p>
+                    <form onSubmit={handleVerifyCode} className="register-verify-form">
+                      <div className="form-group">
+                        <label htmlFor="register-code">{t('verificationCodeLabel')}</label>
+                        <input
+                          id="register-code"
+                          type="text"
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
+                          value={verificationCode}
+                          onChange={(e) => {
+                            setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6));
+                            setVerifyError('');
+                            setResendMessage('');
+                          }}
+                          placeholder={t('verificationCodePlaceholder')}
+                          maxLength={6}
+                          disabled={verifyLoading}
+                          className="register-code-input"
+                        />
+                      </div>
+                      {verifyError && <p className="register-verify-error">{verifyError}</p>}
+                      {resendMessage && <p className="register-resend-message">{resendMessage}</p>}
+                      <div className="register-verify-buttons">
+                        <button
+                          type="submit"
+                          className="login-button"
+                          disabled={verifyLoading || verificationCode.replace(/\D/g, '').length !== 6}
+                        >
+                          {verifyLoading ? t('verifying') : t('verifyButton')}
+                        </button>
+                        <button
+                          type="button"
+                          className="register-resend-button"
+                          onClick={handleResendCode}
+                          disabled={resendLoading}
+                        >
+                          {resendLoading ? t('sending') : t('resendCodeButton')}
+                        </button>
+                      </div>
+                    </form>
+                    <div className="login-footer">
+                      <p>
+                        {t('hasAccount')}{' '}
+                        <Link to="/login" className="link">{t('loginHere')}</Link>
+                      </p>
+                    </div>
+                  </>
+              </div>
+            ) : (
+              <>
+                <form onSubmit={handleSubmit} className="login-form">
+                  <div className="form-group">
+                    <label htmlFor="username">{t('username')}</label>
+                    <input
+                      type="text"
+                      id="username"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleChange}
+                      required
+                      disabled={loading}
+                      minLength={3}
+                      maxLength={20}
+                      pattern="[-a-zA-Z0-9_]+"
+                    />
+                    <small className="form-hint">{t('usernameHint')}</small>
+                  </div>
 
-            <div className="form-group">
-              <label htmlFor="confirmPassword">{t('confirmPassword')}</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                placeholder="••••••••"
-                disabled={loading}
-              />
-            </div>
+                  <div className="form-group">
+                    <label htmlFor="email">{t('email')}</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      disabled={loading}
+                    />
+                  </div>
 
-            <button 
-              type="submit" 
-              className="register-button"
-              disabled={loading}
-            >
-              {loading ? t('registering') : t('registerButton')}
-            </button>
-          </form>
+                  <div className="form-group">
+                    <label htmlFor="password">{t('password')}</label>
+                    <input
+                      type="password"
+                      id="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                      placeholder="••••••••"
+                      disabled={loading}
+                    />
+                  </div>
 
-          <div className="register-footer">
-            <p>
-              {t('hasAccount')}{' '}
-              <Link to="/login" className="link">{t('loginHere')}</Link>
-            </p>
+                  <div className="form-group">
+                    <label htmlFor="confirmPassword">{t('confirmPassword')}</label>
+                    <input
+                      type="password"
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      required
+                      placeholder="••••••••"
+                      disabled={loading}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="login-button"
+                    disabled={loading}
+                  >
+                    {loading ? t('registering') : t('registerButton')}
+                  </button>
+                </form>
+
+                <div className="login-footer">
+                  <p>
+                    {t('hasAccount')}{' '}
+                    <Link to="/login" className="link">{t('loginHere')}</Link>
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

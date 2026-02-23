@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useLayout } from '../contexts/LayoutContext';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 import './Stories.css';
 
 function Stories() {
@@ -15,7 +17,13 @@ function Stories() {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const { t } = useLanguage();
+  const { setPageTitle, setBackUrl } = useLayout();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setPageTitle(t('stories'));
+    setBackUrl('/scriptorium');
+  }, [t, setPageTitle, setBackUrl]);
 
   const fetchStories = async () => {
     try {
@@ -88,21 +96,6 @@ function Stories() {
     });
   };
 
-  const stripHtml = (html) => {
-    if (!html) return '';
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
-  };
-
-  const getPreviewText = (content) => {
-    const plainText = stripHtml(content);
-    if (plainText.length > 150) {
-      return plainText.substring(0, 150) + '...';
-    }
-    return plainText;
-  };
-
   const getVisibilityIcon = (visibility) => {
     switch (visibility) {
       case 'PUBLIC':
@@ -128,23 +121,92 @@ function Stories() {
     <div className="stories-container">
       <Header />
 
-      <main className="stories-main">
-        <div className="stories-header">
-          <h1>{t('myStories')}</h1>
-          <button 
-            className="new-story-button"
+      <div className="page-main stories-main">
+        <div className="stories-layout">
+          <aside className="stories-aside">
+            <div className="stories-aside-card">
+              <h3 className="stories-aside-card-title">{t('quickAccess')}</h3>
+              <ul className="stories-aside-list">
+                <li>
+                  <button type="button" className="stories-aside-link" onClick={() => navigate('/scriptorium')}>
+                    <i className="fa-solid fa-feather-pointed"></i> {t('scriptorium')}
+                  </button>
+                </li>
+                <li>
+                  <button type="button" className="stories-aside-link" onClick={() => navigate('/plots')}>
+                    <i className="fa-solid fa-diagram-project"></i> {t('timelines')}
+                  </button>
+                </li>
+                <li>
+                  <button type="button" className="stories-aside-link" onClick={() => navigate('/profile')}>
+                    <i className="fa-solid fa-user"></i> {t('myProfile')}
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </aside>
+
+          <main className="stories-main-content">
+            <div className="page-content">
+        {error && <p className="stories-error">{error}</p>}
+
+        <div className="stories-grid">
+          <button
+            type="button"
+            className="story-card story-card-new"
             onClick={() => setShowNewStoryForm(true)}
+            aria-label={t('newStory')}
           >
-            <i className="fa-solid fa-plus"></i> {t('newStory')}
+            <span className="story-card-new-circle">
+              <i className="fa-solid fa-plus"></i>
+            </span>
           </button>
+          {stories.map((story) => (
+            <div
+              key={story.id}
+              className="story-card"
+              onClick={() => navigate(`/story/${story.id}`)}
+            >
+              <div className="story-card-content">
+                <div className="story-card-header">
+                  <h3 className="story-card-title">{story.title}</h3>
+                  <span className="story-card-meta">
+                    {getVisibilityIcon(story.visibility)} {t(story.visibility.toLowerCase())}
+                  </span>
+                </div>
+                <div className="story-card-footer">
+                  <span className="story-card-date">
+                    <i className="fa-solid fa-calendar"></i> {formatDate(story.createdAt)}
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="story-card-delete"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeleteConfirm(story);
+                }}
+                title={t('delete')}
+              >
+                <i className="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          ))}
         </div>
 
-        {error && <div className="stories-error">{error}</div>}
+        {stories.length === 0 && !error && (
+          <div className="no-stories">
+            <i className="fa-solid fa-book-open"></i>
+            <p>{t('noStoriesYet')}</p>
+            <p className="no-stories-hint">{t('createFirstStory')}</p>
+          </div>
+        )}
 
         {/* New Story Modal */}
         {showNewStoryForm && (
-          <div className="new-story-overlay" onClick={() => setShowNewStoryForm(false)}>
-            <div className="new-story-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="story-modal-overlay" onClick={() => setShowNewStoryForm(false)}>
+            <div className="story-modal" onClick={(e) => e.stopPropagation()}>
               <h2>{t('createNewStory')}</h2>
               <form onSubmit={handleCreateStory}>
                 <div className="form-group">
@@ -192,8 +254,8 @@ function Stories() {
 
         {/* Delete Confirmation Modal */}
         {deleteConfirm && (
-          <div className="new-story-overlay" onClick={() => setDeleteConfirm(null)}>
-            <div className="delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="story-modal-overlay" onClick={() => setDeleteConfirm(null)}>
+            <div className="story-modal story-confirm-modal" onClick={(e) => e.stopPropagation()}>
               <h2>{t('confirmDelete')}</h2>
               <p>{t('deleteStoryWarning')}</p>
               <p className="delete-story-title">"{deleteConfirm.title}"</p>
@@ -218,57 +280,11 @@ function Stories() {
             </div>
           </div>
         )}
-
-        {stories.length === 0 ? (
-          <div className="no-stories">
-            <i className="fa-solid fa-book-open"></i>
-            <p>{t('noStoriesYet')}</p>
-            <p className="hint">{t('createFirstStory')}</p>
-          </div>
-        ) : (
-          <div className="stories-grid">
-            {stories.map((story) => (
-              <div 
-                key={story.id} 
-                className="story-card"
-                onClick={() => navigate(`/story/${story.id}`)}
-              >
-                <div className="story-header">
-                  <h3>{story.title}</h3>
-                  <div className="story-actions">
-                    <span className="visibility-icon">{getVisibilityIcon(story.visibility)}</span>
-                    <button 
-                      className="delete-icon-button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteConfirm(story);
-                      }}
-                      title={t('delete')}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
-                  </div>
-                </div>
-                {story.content && (
-                  <p className="story-preview">
-                    {getPreviewText(story.content)}
-                  </p>
-                )}
-                <div className="story-footer">
-                  <span className="story-date">
-                    <i className="fa-solid fa-calendar"></i> {formatDate(story.createdAt)}
-                  </span>
-                  {story.updatedAt !== story.createdAt && (
-                    <span className="story-updated">
-                      <i className="fa-solid fa-pen"></i> {formatDate(story.updatedAt)}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </main>
+            </div>
+          </main>
+        </div>
+      </div>
+      <Footer />
     </div>
   );
 }

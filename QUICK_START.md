@@ -1,4 +1,4 @@
-# 🚀 Inicio Rápido - La Voz de las Páginas
+# 🚀 Inicio Rápido - La voz de las páginas
 
 ## Instalación Completa
 

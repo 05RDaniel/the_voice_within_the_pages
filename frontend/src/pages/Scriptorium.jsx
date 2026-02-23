@@ -2,13 +2,21 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useLayout } from '../contexts/LayoutContext';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 import './Scriptorium.css';
 
 function Scriptorium() {
   const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
+  const { setPageTitle, setBackUrl } = useLayout();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setPageTitle(t('scriptoriumWelcome'));
+    setBackUrl('/home');
+  }, [t, setPageTitle, setBackUrl]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -40,35 +48,36 @@ function Scriptorium() {
     <div className="scriptorium-container">
       <Header />
 
-      <main className="scriptorium-main">
-        <h1 className="scriptorium-title">{t('scriptoriumWelcome')}</h1>
-        
-        <div className="scriptorium-cards">
-          <div className="scriptorium-card" onClick={() => navigate('/stories')}>
-            <div className="card-icon">
-              <i className="fa-solid fa-book-open"></i>
+      <div className="page-main scriptorium-main">
+        <div className="page-content">
+          <div className="scriptorium-cards">
+            <div className="scriptorium-card" onClick={() => navigate('/stories')}>
+              <div className="card-icon">
+                <i className="fa-solid fa-book-open"></i>
+              </div>
+              <h2>{t('stories')}</h2>
+              <p>{t('storiesDescription')}</p>
             </div>
-            <h2>{t('stories')}</h2>
-            <p>{t('storiesDescription')}</p>
-          </div>
-          
-          <div className="scriptorium-card">
-            <div className="card-icon">
-              <i className="fa-solid fa-users"></i>
+            
+            <div className="scriptorium-card">
+              <div className="card-icon">
+                <i className="fa-solid fa-users"></i>
+              </div>
+              <h2>{t('characters')}</h2>
+              <p>{t('charactersDescription')}</p>
             </div>
-            <h2>{t('characters')}</h2>
-            <p>{t('charactersDescription')}</p>
-          </div>
-          
-          <div className="scriptorium-card" onClick={() => navigate('/plots')}>
-            <div className="card-icon">
-              <i className="fa-solid fa-diagram-project"></i>
+            
+            <div className="scriptorium-card" onClick={() => navigate('/plots')}>
+              <div className="card-icon">
+                <i className="fa-solid fa-diagram-project"></i>
+              </div>
+              <h2>{t('plots')}</h2>
+              <p>{t('plotsDescription')}</p>
             </div>
-            <h2>{t('plots')}</h2>
-            <p>{t('plotsDescription')}</p>
           </div>
         </div>
-      </main>
+      </div>
+      <Footer />
     </div>
   );
 }
