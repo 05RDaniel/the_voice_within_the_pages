@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTutorial } from '../contexts/TutorialContext';
 import { api } from '../lib/api';
 import './Footer.css';
 
@@ -8,6 +10,8 @@ function Footer() {
   const [isVisible, setIsVisible] = useState(true);
   const [loading, setLoading] = useState(true);
   const { language } = useLanguage();
+  const location = useLocation();
+  const { openTutorial } = useTutorial();
 
   const getFallbackQuote = useCallback((lang) => {
     const fallbackQuotes = {
@@ -81,6 +85,15 @@ function Footer() {
       <footer className="app-footer">
         <div className="footer-content">
           <span className="quote-loading">...</span>
+          <button
+            type="button"
+            className="footer-help-icon"
+            onClick={() => openTutorial(location.pathname)}
+            aria-label={language === 'es' ? 'Abrir tutorial' : 'Open tutorial'}
+            title={language === 'es' ? 'Abrir tutorial' : 'Open tutorial'}
+          >
+            <i className="fa-solid fa-question" />
+          </button>
         </div>
       </footer>
     );
@@ -95,6 +108,15 @@ function Footer() {
             {quote.author && <span className="quote-author">— {quote.author}</span>}
           </div>
         )}
+        <button
+          type="button"
+          className="footer-help-icon"
+          onClick={() => openTutorial(location.pathname)}
+          aria-label={language === 'es' ? 'Abrir tutorial' : 'Open tutorial'}
+          title={language === 'es' ? 'Abrir tutorial' : 'Open tutorial'}
+        >
+          <i className="fa-solid fa-question" />
+        </button>
       </div>
     </footer>
   );

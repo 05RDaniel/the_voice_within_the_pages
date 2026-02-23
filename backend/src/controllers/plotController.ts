@@ -9,7 +9,7 @@ export const createPlot = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "No autenticado" });
     }
 
-    const { timelineId, name, start, end } = req.body;
+    const { timelineId, name, description, start, end, color } = req.body;
 
     if (!timelineId || !name || start === undefined || end === undefined) {
       return res.status(400).json({ error: "Todos los campos son requeridos" });
@@ -46,8 +46,10 @@ export const createPlot = async (req: Request, res: Response) => {
     const plot = await prisma.plot.create({
       data: {
         name,
-        start: parseInt(start),
-        end: parseInt(end),
+        description: description != null && description !== '' ? String(description) : null,
+        start: parseFloat(start),
+        end: parseFloat(end),
+        color: color != null && color !== '' ? String(color) : null,
         timelineId
       }
     });
@@ -68,7 +70,7 @@ export const updatePlot = async (req: Request, res: Response) => {
     }
 
     const id = req.params.id as string;
-    const { name, start, end } = req.body;
+    const { name, description, start, end, color } = req.body;
 
     // Verify plot exists and belongs to user
     const existingPlot = await prisma.plot.findUnique({
@@ -95,9 +97,11 @@ export const updatePlot = async (req: Request, res: Response) => {
     }
 
     const updateData: any = {};
-    if (name) updateData.name = name;
-    if (start !== undefined) updateData.start = parseInt(start);
-    if (end !== undefined) updateData.end = parseInt(end);
+    if (name !== undefined) updateData.name = name;
+    if (description !== undefined) updateData.description = description === '' ? null : description;
+    if (start !== undefined) updateData.start = parseFloat(start);
+    if (end !== undefined) updateData.end = parseFloat(end);
+    if (color !== undefined) updateData.color = color === '' ? null : color;
 
     if (updateData.start && updateData.end && updateData.start > updateData.end) {
       return res.status(400).json({ error: "El inicio no puede ser mayor que el final" });

@@ -1,6 +1,6 @@
-# La Voz de las Páginas - Frontend
+# La voz de las páginas - Frontend
 
-Aplicación React con Vite para convertir texto a voz.
+Aplicación React con Vite para el gestor narrativo La voz de las páginas.
 
 ## 🚀 Inicio Rápido
 

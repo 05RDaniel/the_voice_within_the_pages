@@ -8,6 +8,8 @@ import quoteRoutes from "./routes/quoteRoutes";
 import storyRoutes from "./routes/storyRoutes";
 import timelineRoutes from "./routes/timelineRoutes";
 import plotRoutes from "./routes/plotRoutes";
+import noteRoutes from "./routes/noteRoutes";
+import characterRoutes from "./routes/characterRoutes";
 
 dotenv.config();
 
@@ -36,7 +38,7 @@ app.set('trust proxy', 1);
 const isProduction = process.env.NODE_ENV === "production";
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "la-voz-de-las-paginas-secret-key",
+    secret: process.env.SESSION_SECRET || "the-voice-within-the-pages-secret-key",
     resave: false,
     saveUninitialized: false,
     proxy: isProduction,
@@ -51,7 +53,7 @@ app.use(
 
 // Routes
 app.get("/health", (req, res) => {
-  res.json({ status: "ok", message: "La Voz de las Páginas API is running" });
+  res.json({ status: "ok", message: "The voice within the pages API is running" });
 });
 
 // API Routes
@@ -61,6 +63,8 @@ app.use("/api/quotes", quoteRoutes);
 app.use("/api/stories", storyRoutes);
 app.use("/api/timelines", timelineRoutes);
 app.use("/api/plots", plotRoutes);
+app.use("/api/notes", noteRoutes);
+app.use("/api/characters", characterRoutes);
 
 // Error handling
 app.use((err: unknown, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -72,6 +76,3 @@ app.use((err: unknown, req: express.Request, res: express.Response, next: expres
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
-
-
-

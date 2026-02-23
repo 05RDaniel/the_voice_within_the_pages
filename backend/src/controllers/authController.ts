@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
+import crypto from "crypto";
 import { prisma } from "../lib/prisma";
+import { sendEmail } from "../lib/email";
 import {
   hashPassword,
   verifyPassword,
@@ -7,6 +9,12 @@ import {
   normalizeEmail,
   normalizeUsername,
 } from "../utils/passwordUtils";
+
+const VERIFICATION_CODE_EXPIRY_HOURS = 24;
+
+function generateVerificationCode(): string {
+  return String(crypto.randomInt(0, 1000000)).padStart(6, "0");
+}
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -42,6 +50,13 @@ export const login = async (req: Request, res: Response) => {
 
     if (!isValidPassword) {
       return res.status(401).json({ error: "Credenciales inválidas" });
+    }
+
+    if (!user.emailVerified) {
+      return res.status(403).json({
+        error: "Debes verificar tu correo electrónico para acceder",
+        code: "EMAIL_NOT_VERIFIED",
+      });
     }
 
     // Crear sesión
@@ -116,30 +131,150 @@ export const register = async (req: Request, res: Response) => {
     // Hash seguro de la contraseña
     const hashedPassword = await hashPassword(password);
 
-    // Crear usuario con datos normalizados
-    const user = await prisma.user.create({
+    const verificationCode = generateVerificationCode();
+    const expiresAt = new Date(Date.now() + VERIFICATION_CODE_EXPIRY_HOURS * 60 * 60 * 1000);
+
+    // Crear usuario (sin sesión hasta verificar correo)
+    await prisma.user.create({
       data: {
         username: normalizedUsername,
         email: normalizedEmail,
         password: hashedPassword,
+        emailVerified: false,
+        emailVerificationToken: verificationCode,
+        emailVerificationTokenExpiresAt: expiresAt,
       },
     });
 
-    // Crear sesión
-    (req.session as any).userId = user.id;
-    (req.session as any).userEmail = user.email;
+    const verifySubject = "Tu código de verificación — La voz de las páginas";
+    const verifyHtml = `
+      <h2>Hola, ${normalizedUsername}</h2>
+      <p>Tu código de verificación para <strong>La voz de las páginas</strong> es:</p>
+      <p style="font-size:1.5rem;font-weight:700;letter-spacing:0.3em;margin:1rem 0;">${verificationCode}</p>
+      <p>Introduce este código en la web para activar tu cuenta. El código caduca en 24 horas.</p>
+      <p>Si no creaste esta cuenta, puedes ignorar este mensaje.</p>
+      <p>— El equipo</p>
+    `;
+    sendEmail(normalizedEmail, verifySubject, verifyHtml).then((result) => {
+      if (!result.success) {
+        console.error("[Register] No se pudo enviar el correo de verificación:", result.error);
+      }
+    });
 
     res.status(201).json({
-      message: "Usuario creado exitosamente",
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-      },
+      message: "Revisa tu correo para verificar tu cuenta",
+      needsVerification: true,
     });
   } catch (error) {
     console.error("Register error:", error);
     res.status(500).json({ error: "Error al registrar usuario" });
+  }
+};
+
+export const verifyEmail = async (req: Request, res: Response) => {
+  try {
+    const { email, code } = req.body;
+    const normalizedEmail = normalizeEmail((email || "").trim());
+    const codeStr = String(code || "").trim().replace(/\s/g, "");
+
+    if (!normalizedEmail || !codeStr) {
+      return res.status(400).json({ error: "Email y código son requeridos" });
+    }
+
+    if (!/^\d{6}$/.test(codeStr)) {
+      return res.status(400).json({ error: "El código debe tener 6 dígitos" });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "Código inválido o caducado" });
+    }
+
+    if (user.emailVerified) {
+      return res.status(200).json({
+        message: "Tu cuenta ya está verificada; puedes iniciar sesión.",
+        code: "ALREADY_VERIFIED",
+      });
+    }
+
+    if (!user.emailVerificationToken || user.emailVerificationToken !== codeStr) {
+      return res.status(400).json({ error: "Código inválido o caducado" });
+    }
+
+    if (!user.emailVerificationTokenExpiresAt || user.emailVerificationTokenExpiresAt < new Date()) {
+      return res.status(400).json({ error: "El código ha caducado. Solicita uno nuevo." });
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerified: true,
+        emailVerificationToken: null,
+        emailVerificationTokenExpiresAt: null,
+      },
+    });
+
+    res.json({ message: "Correo verificado correctamente" });
+  } catch (error) {
+    console.error("Verify email error:", error);
+    res.status(500).json({ error: "Error al verificar el correo" });
+  }
+};
+
+export const resendVerificationEmail = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    const normalizedEmail = normalizeEmail(email || "");
+
+    if (!normalizedEmail) {
+      return res.status(400).json({ error: "El email es requerido" });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "No existe ninguna cuenta con ese correo" });
+    }
+
+    if (user.emailVerified) {
+      return res.status(400).json({ error: "Esta cuenta ya está verificada" });
+    }
+
+    const verificationCode = generateVerificationCode();
+    const expiresAt = new Date(Date.now() + VERIFICATION_CODE_EXPIRY_HOURS * 60 * 60 * 1000);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerificationToken: verificationCode,
+        emailVerificationTokenExpiresAt: expiresAt,
+      },
+    });
+
+    const verifySubject = "Tu nuevo código de verificación — La voz de las páginas";
+    const verifyHtml = `
+      <h2>Hola, ${user.username}</h2>
+      <p>Tu nuevo código de verificación es:</p>
+      <p style="font-size:1.5rem;font-weight:700;letter-spacing:0.3em;margin:1rem 0;">${verificationCode}</p>
+      <p>Introduce este código en la web. El código caduca en 24 horas.</p>
+      <p>Si no fuiste tú, puedes ignorar este mensaje.</p>
+      <p>— El equipo</p>
+    `;
+    const result = await sendEmail(normalizedEmail, verifySubject, verifyHtml);
+    if (!result.success) {
+      console.error("[Resend verification] Error:", result.error);
+      return res.status(500).json({ error: "No se pudo enviar el correo. Inténtalo más tarde." });
+    }
+
+    res.json({ message: "Se ha enviado un nuevo correo de verificación" });
+  } catch (error) {
+    console.error("Resend verification error:", error);
+    res.status(500).json({ error: "Error al reenviar el correo" });
   }
 };
 
@@ -169,6 +304,7 @@ export const getMe = async (req: Request, res: Response) => {
         email: true,
         profileImage: true,
         createdAt: true,
+        emailVerified: true,
       },
     });
 
@@ -176,7 +312,16 @@ export const getMe = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
-    res.json({ user });
+    if (!user.emailVerified) {
+      req.session.destroy(() => {});
+      return res.status(403).json({
+        error: "Debes verificar tu correo electrónico para acceder",
+        code: "EMAIL_NOT_VERIFIED",
+      });
+    }
+
+    const { emailVerified: _, ...userWithoutVerified } = user;
+    res.json({ user: userWithoutVerified });
   } catch (error) {
     console.error("Get me error:", error);
     res.status(500).json({ error: "Error al obtener información del usuario" });

@@ -1,0 +1,125 @@
+.verify-email-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.verify-email-card {
+  background: var(--card-bg, rgba(255, 255, 255, 0.95));
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+
+.verify-email-card h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.verify-email-intro {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary, #555);
+}
+
+.verify-email-form {
+  text-align: left;
+}
+
+.verify-email-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.verify-email-form .form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.verify-email-form .form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.verify-email-code-input {
+  font-size: 1.5rem;
+  letter-spacing: 0.4em;
+  text-align: center;
+}
+
+.verify-email-error {
+  color: var(--error, #c62828);
+  font-size: 0.9rem;
+  margin: 0 0 0.75rem;
+}
+
+.verify-email-submit {
+  width: 100%;
+  padding: 12px;
+  margin-top: 0.5rem;
+  background: #5c4d3a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.verify-email-submit:hover:not(:disabled) {
+  background: #4a3f32;
+}
+
+.verify-email-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.verify-email-footer {
+  margin: 1.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+}
+
+.verify-email-link-inline {
+  color: var(--link-color, #5c4d3a);
+  font-weight: 500;
+}
+
+.verify-email-link-inline:hover {
+  text-decoration: underline;
+}
+
+.verify-email-success {
+  color: var(--success, #2e7d32);
+  margin-bottom: 1rem;
+}
+
+.verify-email-link {
+  display: inline-block;
+  color: var(--link-color, #5c4d3a);
+  font-weight: 500;
+}
+
+.verify-email-link:hover {
+  text-decoration: underline;
+}
+
+/* Register: CTA para ir a verificar con código */
+.register-verify-cta {
+  margin: 0.5rem 0;
+}
+
+.register-verify-cta .link {
+  font-weight: 700;
+}

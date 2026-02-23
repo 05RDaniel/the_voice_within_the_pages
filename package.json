@@ -2,7 +2,7 @@
   "name": "la-voz-de-las-paginas",
   "version": "0.1.0",
   "private": true,
-  "description": "La Voz de las Páginas - Aplicación para convertir texto a voz",
+  "description": "La voz de las páginas - Aplicación para convertir texto a voz",
   "scripts": {
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:frontend": "cd frontend && npm run dev",

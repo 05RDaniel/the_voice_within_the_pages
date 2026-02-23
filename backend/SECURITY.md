@@ -1,4 +1,4 @@
-# Medidas de Seguridad - La Voz de las Páginas
+# Medidas de Seguridad - La voz de las páginas
 
 ## 🔐 Seguridad de Contraseñas
 
