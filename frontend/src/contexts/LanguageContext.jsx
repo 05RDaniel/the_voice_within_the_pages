@@ -1,4 +1,5 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { LanguageContext } from './languageContextRef';
 
 const translations = {
   es: {
@@ -532,10 +533,6 @@ const translations = {
     tutorialHomeMenuBody: 'In the top-right corner of the header you will find the menu: Home, My profile, language and theme. Use it to navigate and configure the app.',
   }
 };
-
-const LanguageContext = createContext(null);
-
-export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState(() => {

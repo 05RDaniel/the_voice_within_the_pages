@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useLanguage } from '../contexts/useLanguage';
 import { useLayout } from '../contexts/LayoutContext';
 import { useTutorial } from '../contexts/TutorialContext';
 import Header from '../components/Header';

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTutorial } from '../contexts/TutorialContext';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useLanguage } from '../contexts/useLanguage';
 import './TutorialOverlay.css';
 
 const CARD_WIDTH = 380;
