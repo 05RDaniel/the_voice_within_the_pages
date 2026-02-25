@@ -104,7 +104,7 @@ function TimelineView() {
     const fetchData = async () => {
       try {
         const authResponse = await api.get('/api/auth/me');
-        if (authResponse.error) {
+        if (authResponse.error || !authResponse.user) {
           navigate('/login');
           return;
         }

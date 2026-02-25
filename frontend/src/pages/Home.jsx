@@ -30,7 +30,7 @@ function Home() {
     const checkAuth = async () => {
       try {
         const response = await api.get('/api/auth/me');
-        if (response.error) {
+        if (response.error || !response.user) {
           navigate('/login');
         }
       } catch (err) {

@@ -293,7 +293,7 @@ export const getMe = async (req: Request, res: Response) => {
     const userId = (req.session as any)?.userId;
 
     if (!userId) {
-      return res.status(401).json({ error: "No autenticado" });
+      return res.status(200).json({ user: null });
     }
 
     const user = await prisma.user.findUnique({
