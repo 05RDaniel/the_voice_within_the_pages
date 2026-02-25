@@ -27,6 +27,7 @@ const translations = {
     registerHere: 'Regístrate aquí',
     loginError: 'Error al iniciar sesión. Por favor, intenta de nuevo.',
     invalidCredentials: 'Credenciales inválidas',
+    connectionError: 'No se pudo conectar con el servidor. Comprueba tu conexión o espera unos segundos (el servidor puede estar iniciando).',
     
     // Register
     registerTitle: '📜 Registro',
@@ -291,6 +292,7 @@ const translations = {
     registerHere: 'Register here',
     loginError: 'Login error. Please try again.',
     invalidCredentials: 'Invalid credentials',
+    connectionError: 'Could not connect to the server. Check your connection or wait a few seconds (the server may be starting).',
     
     // Register
     registerTitle: '📜 Register',

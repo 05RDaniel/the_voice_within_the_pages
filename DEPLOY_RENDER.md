@@ -50,11 +50,14 @@ Haz clic en **Advanced** → **Add Environment Variable** y añade las siguiente
 | Variable | Valor |
 |----------|-------|
 | `DATABASE_URL` | La Internal Database URL copiada en el Paso 1 |
-| `JWT_SECRET` | Una cadena aleatoria segura (mínimo 32 caracteres) |
+| `SESSION_SECRET` | Una cadena aleatoria segura (mínimo 32 caracteres) |
+| `FRONTEND_URL` | URL exacta del frontend (ej. `https://la-voz-de-las-paginas.vercel.app`) para CORS |
 | `NODE_ENV` | `production` |
 | `PORT` | `10000` |
 
-> **Nota**: Para generar un JWT_SECRET seguro, puedes usar:
+> **Importante**: `FRONTEND_URL` debe ser la URL de tu front en Vercel. Si no la configuras, el login desde el front desplegado puede fallar con "Failed to fetch". En plan Free el servicio puede tardar ~50 s en despertar; si falla, espera y vuelve a intentar.
+>
+> Para generar un SESSION_SECRET seguro, puedes usar:
 > ```bash
 > openssl rand -base64 32
 > ```
@@ -157,8 +160,10 @@ services:
         fromDatabase:
           name: la-voz-de-las-paginas-db
           property: connectionString
-      - key: JWT_SECRET
+      - key: SESSION_SECRET
         generateValue: true
+      - key: FRONTEND_URL
+        sync: false
       - key: NODE_ENV
         value: production
 

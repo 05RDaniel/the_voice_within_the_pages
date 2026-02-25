@@ -16,15 +16,23 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Middleware – allow frontend origins (set FRONTEND_URL on Render if using another domain)
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "https://the-voice-within-the-pages-frontend.vercel.app",
+  "https://la-voz-de-las-paginas.vercel.app",
+  "https://www.thevoicewithinthepages.es",
+  "https://thevoicewithinthepages.es",
+  process.env.FRONTEND_URL || ""
+].filter(Boolean);
+
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:5175",
-    "https://the-voice-within-the-pages-frontend.vercel.app",
-    process.env.FRONTEND_URL || ""
-  ].filter(Boolean),
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.some((o) => o === origin)) return cb(null, true);
+    cb(null, false);
+  },
   credentials: true,
 }));
 

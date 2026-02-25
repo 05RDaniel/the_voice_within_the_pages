@@ -43,6 +43,7 @@ function Login() {
       'Credenciales inválidas': 'invalidCredentials',
       'Usuario/Email y contraseña son requeridos': 'allFieldsRequired',
       'Debes verificar tu correo electrónico para acceder': 'emailNotVerified',
+      'CONNECTION_ERROR': 'connectionError',
     };
     return errorMap[errorMsg] ? t(errorMap[errorMsg]) : errorMsg;
   };

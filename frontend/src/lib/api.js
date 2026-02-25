@@ -1,43 +1,47 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+async function safeFetch(url, options = {}) {
+  let response;
+  try {
+    response = await fetch(url, { ...options, credentials: 'include' });
+  } catch (err) {
+    console.error('API request failed:', err);
+    return { error: 'CONNECTION_ERROR' };
+  }
+  try {
+    const data = await response.json();
+    if (!response.ok && !data.error) {
+      data.error = data.message || `Error ${response.status}`;
+    }
+    return data;
+  } catch {
+    return { error: response.ok ? 'Error inesperado' : `Error ${response.status}` };
+  }
+}
+
 export const api = {
   async get(endpoint) {
-    const response = await fetch(`${API_URL}${endpoint}`, {
-      credentials: 'include',
-    });
-    return response.json();
+    return safeFetch(`${API_URL}${endpoint}`);
   },
 
   async post(endpoint, data) {
-    const response = await fetch(`${API_URL}${endpoint}`, {
+    return safeFetch(`${API_URL}${endpoint}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    return response.json();
   },
 
   async put(endpoint, data) {
-    const response = await fetch(`${API_URL}${endpoint}`, {
+    return safeFetch(`${API_URL}${endpoint}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    return response.json();
   },
 
   async delete(endpoint) {
-    const response = await fetch(`${API_URL}${endpoint}`, {
-      method: 'DELETE',
-      credentials: 'include',
-    });
-    return response.json();
+    return safeFetch(`${API_URL}${endpoint}`, { method: 'DELETE' });
   },
 };
 
