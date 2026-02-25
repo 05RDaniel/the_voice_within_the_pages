@@ -64,26 +64,18 @@ function Login() {
     setLoading(true);
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
+      const data = await api.post('/api/auth/login', formData);
 
-      if (!res.ok) {
-        if (res.status === 403 && data.code === 'EMAIL_NOT_VERIFIED') {
-          setError(translateError(data.error));
+      if (data.error) {
+        setError(translateError(data.error));
+        if (data.code === 'EMAIL_NOT_VERIFIED') {
           setShowResendVerification(true);
           const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.usernameOrEmail);
           if (isEmail) setResendEmail(formData.usernameOrEmail);
-        } else {
-          setError(translateError(data.error || data.message) || t('loginError'));
         }
         return;
       }
+
       navigate('/home');
     } catch (err) {
       setError(t('loginError'));
