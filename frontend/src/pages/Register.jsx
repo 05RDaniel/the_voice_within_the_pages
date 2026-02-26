@@ -72,12 +72,14 @@ function Register() {
     }
 
     try {
+      const payload = { username: formData.username, email: formData.email, password: '[REDACTED]' };
+      console.log('[Register] POST /api/auth/register', payload);
       const response = await api.post('/api/auth/register', {
         username: formData.username,
         email: formData.email,
         password: formData.password
       });
-      
+      console.log('[Register] register response', { error: response.error, needsVerification: response.needsVerification });
       if (response.error) {
         setError(translateError(response.error));
       } else if (response.needsVerification) {
@@ -87,7 +89,7 @@ function Register() {
       }
     } catch (err) {
       setError(t('registerError'));
-      console.error('Register error:', err);
+      console.error('[Register] request failed', err);
     } finally {
       setLoading(false);
     }
@@ -104,17 +106,20 @@ function Register() {
     }
     setVerifyLoading(true);
     try {
+      console.log('[Register] POST /api/auth/verify-email', { email: formData.email, codeLength: codeStr.length });
       const data = await api.post('/api/auth/verify-email', {
         email: formData.email,
         code: codeStr,
       });
+      console.log('[Register] verify-email response', { error: data.error, message: data.message });
       if (data.error) {
         setVerifyError(data.error);
         return;
       }
-      setVerifySuccess(true);
+      navigate('/login');
     } catch (err) {
       setVerifyError(t('verificationFailed'));
+      console.error('[Register] verify-email request failed', err);
     } finally {
       setVerifyLoading(false);
     }
@@ -126,7 +131,9 @@ function Register() {
     setResendMessage('');
     setResendLoading(true);
     try {
+      console.log('[Register] POST /api/auth/resend-verification', { email: formData.email });
       const data = await api.post('/api/auth/resend-verification', { email: formData.email });
+      console.log('[Register] resend-verification response', { error: data.error, message: data.message });
       if (data.error) {
         setResendMessage(data.error);
       } else {
@@ -134,6 +141,7 @@ function Register() {
       }
     } catch (err) {
       setResendMessage(t('registerError'));
+      console.error('[Register] resend-verification request failed', err);
     } finally {
       setResendLoading(false);
     }

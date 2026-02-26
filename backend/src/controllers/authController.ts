@@ -79,32 +79,39 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const register = async (req: Request, res: Response) => {
+  const log = (msg: string, data?: object) => console.log("[Auth:register]", msg, data ?? "");
   try {
+    log("request received", { hasBody: Boolean(req.body), keys: req.body ? Object.keys(req.body) : [] });
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
+      log("validation failed: missing fields", { hasUsername: Boolean(username), hasEmail: Boolean(email), hasPassword: Boolean(password) });
       return res.status(400).json({ error: "Todos los campos son requeridos" });
     }
 
     // Validar fortaleza de la contraseña
     const passwordValidation = validatePasswordStrength(password);
     if (!passwordValidation.valid) {
+      log("validation failed: password strength", { error: passwordValidation.error });
       return res.status(400).json({ error: passwordValidation.error });
     }
 
     // Normalizar datos
     const normalizedEmail = normalizeEmail(email);
     const normalizedUsername = normalizeUsername(username);
+    log("normalized input", { normalizedEmail, normalizedUsername });
 
     // Validar formato de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(normalizedEmail)) {
+      log("validation failed: invalid email format");
       return res.status(400).json({ error: "El formato del email no es válido" });
     }
 
     // Validar formato de username (solo letras, números, guiones y guiones bajos)
     const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
     if (!usernameRegex.test(normalizedUsername)) {
+      log("validation failed: invalid username format");
       return res.status(400).json({
         error: "El nombre de usuario debe tener entre 3 y 20 caracteres y solo puede contener letras, números, guiones y guiones bajos"
       });
@@ -114,8 +121,8 @@ export const register = async (req: Request, res: Response) => {
     const existingEmail = await prisma.user.findUnique({
       where: { email: normalizedEmail },
     });
-
     if (existingEmail) {
+      log("rejected: email already exists", { email: normalizedEmail });
       return res.status(400).json({ error: "El email ya está registrado" });
     }
 
@@ -123,16 +130,18 @@ export const register = async (req: Request, res: Response) => {
     const existingUsername = await prisma.user.findUnique({
       where: { username: normalizedUsername },
     });
-
     if (existingUsername) {
+      log("rejected: username already taken", { username: normalizedUsername });
       return res.status(400).json({ error: "El nombre de usuario ya está en uso" });
     }
 
     // Hash seguro de la contraseña
+    log("hashing password");
     const hashedPassword = await hashPassword(password);
 
     const verificationCode = generateVerificationCode();
     const expiresAt = new Date(Date.now() + VERIFICATION_CODE_EXPIRY_HOURS * 60 * 60 * 1000);
+    log("creating user", { email: normalizedEmail, username: normalizedUsername, codeExpiresAt: expiresAt.toISOString() });
 
     // Crear usuario (sin sesión hasta verificar correo)
     await prisma.user.create({
@@ -145,6 +154,7 @@ export const register = async (req: Request, res: Response) => {
         emailVerificationTokenExpiresAt: expiresAt,
       },
     });
+    log("user created, sending verification email");
 
     const verifySubject = "Tu código de verificación — La voz de las páginas";
     const verifyHtml = `
@@ -157,43 +167,53 @@ export const register = async (req: Request, res: Response) => {
     `;
     sendEmail(normalizedEmail, verifySubject, verifyHtml).then((result) => {
       if (!result.success) {
-        console.error("[Register] No se pudo enviar el correo de verificación:", result.error);
+        console.error("[Auth:register] email send failed", { to: normalizedEmail, error: result.error });
+      } else {
+        log("verification email sent", { to: normalizedEmail, messageId: result.messageId });
       }
     });
 
+    log("register success, responding 201", { email: normalizedEmail });
     res.status(201).json({
       message: "Revisa tu correo para verificar tu cuenta",
       needsVerification: true,
     });
   } catch (error) {
-    console.error("Register error:", error);
+    console.error("[Auth:register] error", error);
     res.status(500).json({ error: "Error al registrar usuario" });
   }
 };
 
 export const verifyEmail = async (req: Request, res: Response) => {
+  const log = (msg: string, data?: object) => console.log("[Auth:verifyEmail]", msg, data ?? "");
   try {
+    log("request received", { hasBody: Boolean(req.body) });
     const { email, code } = req.body;
     const normalizedEmail = normalizeEmail((email || "").trim());
     const codeStr = String(code || "").trim().replace(/\s/g, "");
 
     if (!normalizedEmail || !codeStr) {
+      log("validation failed: missing email or code", { hasEmail: Boolean(normalizedEmail), codeLength: codeStr.length });
       return res.status(400).json({ error: "Email y código son requeridos" });
     }
 
     if (!/^\d{6}$/.test(codeStr)) {
+      log("validation failed: code not 6 digits", { codeLength: codeStr.length });
       return res.status(400).json({ error: "El código debe tener 6 dígitos" });
     }
+    log("looking up user", { email: normalizedEmail });
 
     const user = await prisma.user.findUnique({
       where: { email: normalizedEmail },
     });
 
     if (!user) {
+      log("rejected: user not found", { email: normalizedEmail });
       return res.status(400).json({ error: "Código inválido o caducado" });
     }
 
     if (user.emailVerified) {
+      log("already verified", { userId: user.id });
       return res.status(200).json({
         message: "Tu cuenta ya está verificada; puedes iniciar sesión.",
         code: "ALREADY_VERIFIED",
@@ -201,13 +221,16 @@ export const verifyEmail = async (req: Request, res: Response) => {
     }
 
     if (!user.emailVerificationToken || user.emailVerificationToken !== codeStr) {
+      log("rejected: token mismatch", { userId: user.id, hasStoredToken: Boolean(user.emailVerificationToken) });
       return res.status(400).json({ error: "Código inválido o caducado" });
     }
 
     if (!user.emailVerificationTokenExpiresAt || user.emailVerificationTokenExpiresAt < new Date()) {
+      log("rejected: token expired", { userId: user.id, expiresAt: user.emailVerificationTokenExpiresAt?.toISOString() });
       return res.status(400).json({ error: "El código ha caducado. Solicita uno nuevo." });
     }
 
+    log("updating user to verified", { userId: user.id });
     await prisma.user.update({
       where: { id: user.id },
       data: {
@@ -217,36 +240,44 @@ export const verifyEmail = async (req: Request, res: Response) => {
       },
     });
 
+    log("verify success", { userId: user.id });
     res.json({ message: "Correo verificado correctamente" });
   } catch (error) {
-    console.error("Verify email error:", error);
+    console.error("[Auth:verifyEmail] error", error);
     res.status(500).json({ error: "Error al verificar el correo" });
   }
 };
 
 export const resendVerificationEmail = async (req: Request, res: Response) => {
+  const log = (msg: string, data?: object) => console.log("[Auth:resendVerification]", msg, data ?? "");
   try {
+    log("request received", { hasBody: Boolean(req.body) });
     const { email } = req.body;
     const normalizedEmail = normalizeEmail(email || "");
 
     if (!normalizedEmail) {
+      log("validation failed: missing email");
       return res.status(400).json({ error: "El email es requerido" });
     }
+    log("looking up user", { email: normalizedEmail });
 
     const user = await prisma.user.findUnique({
       where: { email: normalizedEmail },
     });
 
     if (!user) {
+      log("rejected: user not found", { email: normalizedEmail });
       return res.status(404).json({ error: "No existe ninguna cuenta con ese correo" });
     }
 
     if (user.emailVerified) {
+      log("rejected: already verified", { userId: user.id });
       return res.status(400).json({ error: "Esta cuenta ya está verificada" });
     }
 
     const verificationCode = generateVerificationCode();
     const expiresAt = new Date(Date.now() + VERIFICATION_CODE_EXPIRY_HOURS * 60 * 60 * 1000);
+    log("updating token", { userId: user.id, expiresAt: expiresAt.toISOString() });
 
     await prisma.user.update({
       where: { id: user.id },
@@ -265,15 +296,16 @@ export const resendVerificationEmail = async (req: Request, res: Response) => {
       <p>Si no fuiste tú, puedes ignorar este mensaje.</p>
       <p>— El equipo</p>
     `;
+    log("sending email");
     const result = await sendEmail(normalizedEmail, verifySubject, verifyHtml);
     if (!result.success) {
-      console.error("[Resend verification] Error:", result.error);
+      console.error("[Auth:resendVerification] email send failed", { to: normalizedEmail, error: result.error });
       return res.status(500).json({ error: "No se pudo enviar el correo. Inténtalo más tarde." });
     }
-
+    log("success", { to: normalizedEmail, messageId: result.messageId });
     res.json({ message: "Se ha enviado un nuevo correo de verificación" });
   } catch (error) {
-    console.error("Resend verification error:", error);
+    console.error("[Auth:resendVerification] error", error);
     res.status(500).json({ error: "Error al reenviar el correo" });
   }
 };
