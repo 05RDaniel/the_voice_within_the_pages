@@ -279,7 +279,7 @@ function Register() {
                       disabled={loading}
                       minLength={3}
                       maxLength={20}
-                      pattern="[-a-zA-Z0-9_]+"
+                      pattern="[a-zA-Z0-9_-]+"
                     />
                     <small className="form-hint">{t('usernameHint')}</small>
                   </div>

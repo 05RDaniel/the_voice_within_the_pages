@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? 'https://la-voz-de-las-paginas-api.onrender.com' : 'http://localhost:5000');
 
 async function safeFetch(url, options = {}) {
   let response;

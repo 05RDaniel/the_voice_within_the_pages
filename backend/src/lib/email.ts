@@ -1,11 +1,11 @@
 import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 let transporter: nodemailer.Transporter | null = null;
 
-/**
- * Lee la configuración SMTP desde process.env en el momento de usar (permite
- * que dotenv se cargue después de importar este módulo, p. ej. en scripts).
- */
+const SMTP_CONNECTION_TIMEOUT_MS = 15_000;
+const SMTP_GREETING_TIMEOUT_MS = 10_000;
+
 function getSmtpConfig() {
   return {
     host: process.env.SMTP_HOST || "smtp.hostinger.com",
@@ -17,10 +17,6 @@ function getSmtpConfig() {
   };
 }
 
-/**
- * Crea el transporter de Nodemailer con SMTP de Hostinger (SSL/TLS).
- * Solo se inicializa si SMTP_USER y SMTP_PASS están definidos.
- */
 function getTransporter(): nodemailer.Transporter | null {
   const config = getSmtpConfig();
   if (transporter) return transporter;
@@ -34,13 +30,17 @@ function getTransporter(): nodemailer.Transporter | null {
     host: config.host,
     port: config.port,
     secure: config.secure,
-    auth: {
-      user: config.user,
-      pass: config.pass,
-    },
+    auth: { user: config.user, pass: config.pass },
+    connectionTimeout: SMTP_CONNECTION_TIMEOUT_MS,
+    greetingTimeout: SMTP_GREETING_TIMEOUT_MS,
   });
 
   return transporter;
+}
+
+/** Si existe RESEND_API_KEY se usa Resend (HTTPS); en Render evita el bloqueo de SMTP. */
+function useResend(): boolean {
+  return Boolean(process.env.RESEND_API_KEY?.trim());
 }
 
 export interface SendEmailResult {
@@ -49,19 +49,59 @@ export interface SendEmailResult {
   error?: string;
 }
 
+function getFromAddress(): string {
+  return process.env.EMAIL_FROM || process.env.SMTP_USER || "onboarding@resend.dev";
+}
+
+async function sendEmailResend(
+  to: string | string[],
+  subject: string,
+  htmlBody: string
+): Promise<SendEmailResult> {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  if (!apiKey) {
+    return { success: false, error: "RESEND_API_KEY no configurado" };
+  }
+
+  const from = getFromAddress();
+  const toList = Array.isArray(to) ? to : [to];
+  const resend = new Resend(apiKey);
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: `"La voz de las páginas" <${from}>`,
+      to: toList,
+      subject,
+      html: htmlBody,
+    });
+
+    if (error) {
+      console.error("[Email] Resend error:", { to: toList, subject, error });
+      return { success: false, error: error.message };
+    }
+    console.log("[Email] Enviado (Resend):", { to: toList, subject, messageId: data?.id });
+    return { success: true, messageId: data?.id };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[Email] Resend exception:", { to: toList, subject, error: message });
+    return { success: false, error: message };
+  }
+}
+
 /**
- * Envía un correo electrónico usando la configuración SMTP (Hostinger).
- *
- * @param to - Dirección o direcciones de destino (string o array de strings)
- * @param subject - Asunto del correo
- * @param htmlBody - Cuerpo del correo en HTML
- * @returns Resultado con success, messageId en caso de éxito o error en caso de fallo
+ * Envía un correo.
+ * - Con RESEND_API_KEY: usa Resend (recomendado en Render; no depende de SMTP).
+ * - Sin él: usa SMTP (Hostinger, etc.). En Render los puertos SMTP suelen estar bloqueados.
  */
 export async function sendEmail(
   to: string | string[],
   subject: string,
   htmlBody: string
 ): Promise<SendEmailResult> {
+  if (useResend()) {
+    return sendEmailResend(to, subject, htmlBody);
+  }
+
   const trans = getTransporter();
   if (!trans) {
     console.warn("[Email] Envío omitido (SMTP no configurado):", { to, subject });
@@ -70,7 +110,7 @@ export async function sendEmail(
 
   const from = getSmtpConfig().from;
   if (!from) {
-    console.error("[Email] No se puede enviar: EMAIL_FROM o SMTP_USER no definido.");
+    console.error("[Email] EMAIL_FROM o SMTP_USER no definido.");
     return { success: false, error: "Remitente no configurado" };
   }
 
@@ -81,17 +121,11 @@ export async function sendEmail(
       subject,
       html: htmlBody,
     });
-
-    console.log("[Email] Enviado correctamente:", {
-      to: Array.isArray(to) ? to : [to],
-      subject,
-      messageId: result.messageId,
-    });
-
+    console.log("[Email] Enviado (SMTP):", { to: Array.isArray(to) ? to : [to], subject, messageId: result.messageId });
     return { success: true, messageId: result.messageId };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("[Email] Error al enviar:", { to, subject, error: message });
+    console.error("[Email] SMTP error:", { to, subject, error: message });
     return { success: false, error: message };
   }
 }

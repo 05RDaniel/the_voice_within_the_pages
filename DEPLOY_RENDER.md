@@ -62,6 +62,17 @@ Haz clic en **Advanced** → **Add Environment Variable** y añade las siguiente
 > openssl rand -base64 32
 > ```
 
+### Correo (verificación de cuenta, etc.)
+
+En Render los puertos SMTP (465/587) suelen estar bloqueados, por lo que **no uses Hostinger SMTP** en producción. Usa **Resend** (API por HTTPS):
+
+| Variable | Valor |
+|----------|-------|
+| `RESEND_API_KEY` | API key de [Resend](https://resend.com/api-keys) (cuenta gratuita) |
+| `EMAIL_FROM` | Email remitente; debe estar verificado en Resend (o `onboarding@resend.dev` solo para pruebas) |
+
+Si defines `RESEND_API_KEY`, el backend enviará los correos por Resend. En local puedes seguir usando SMTP (Hostinger) sin definir `RESEND_API_KEY`.
+
 4. Haz clic en **Create Web Service**
 
 ## Paso 3: Ejecutar las Migraciones
