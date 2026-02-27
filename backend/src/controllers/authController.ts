@@ -59,18 +59,21 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
-    // Crear sesión
+    // Crear sesión y guardar en DB antes de responder (evita race con /me en otros dispositivos)
     (req.session as any).userId = user.id;
     (req.session as any).userEmail = user.email;
     (req.session as any).username = user.username;
 
-    res.json({
-      message: "Login exitoso",
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-      },
+    req.session.save((err) => {
+      if (err) return res.status(500).json({ error: "Error al iniciar sesión" });
+      res.json({
+        message: "Login exitoso",
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+        },
+      });
     });
   } catch (error) {
     res.status(500).json({ error: "Error al iniciar sesión" });
@@ -180,9 +183,12 @@ export const verifyEmail = async (req: Request, res: Response) => {
       (req.session as any).userId = user.id;
       (req.session as any).userEmail = user.email;
       (req.session as any).username = user.username;
-      return res.status(200).json({
-        message: "Tu cuenta ya está verificada.",
-        user: { id: user.id, username: user.username, email: user.email },
+      return req.session.save((err) => {
+        if (err) return res.status(500).json({ error: "Error al verificar" });
+        res.status(200).json({
+          message: "Tu cuenta ya está verificada.",
+          user: { id: user.id, username: user.username, email: user.email },
+        });
       });
     }
 
@@ -207,9 +213,12 @@ export const verifyEmail = async (req: Request, res: Response) => {
     (req.session as any).userEmail = user.email;
     (req.session as any).username = user.username;
 
-    res.json({
-      message: "Correo verificado correctamente",
-      user: { id: user.id, username: user.username, email: user.email },
+    req.session.save((err) => {
+      if (err) return res.status(500).json({ error: "Error al verificar el correo" });
+      res.json({
+        message: "Correo verificado correctamente",
+        user: { id: user.id, username: user.username, email: user.email },
+      });
     });
   } catch (error) {
     res.status(500).json({ error: "Error al verificar el correo" });
