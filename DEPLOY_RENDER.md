@@ -110,33 +110,27 @@ Si quieres añadir las citas iniciales:
 
 ## Paso 5: Verificar el Despliegue
 
-1. Una vez completado el despliegue, Render te proporcionará una URL como:
-   ```
-   https://la-voz-de-las-paginas-api.onrender.com
-   ```
+1. Una vez completado el despliegue, Render te proporcionará una URL (ej. `https://la-voz-de-las-paginas-api.onrender.com`). Si has configurado el dominio personalizado (Paso 7), usa `https://api.thevoicewithinthepages.es`.
 
 2. Verifica que el backend funciona accediendo a:
    ```
-   https://tu-url.onrender.com/api/quotes/random?lang=es
+   https://api.thevoicewithinthepages.es/api/quotes/random?lang=es
    ```
 
 3. Deberías recibir una respuesta JSON con una cita aleatoria.
 
 ## Paso 6: Configurar el Frontend
 
-Actualiza la URL de la API en el frontend (`frontend/src/lib/api.js`):
+La app usa por defecto `https://api.thevoicewithinthepages.es`. Para usar otro dominio, configura `VITE_API_URL` en Vercel (o tu plataforma de frontend).
 
-```javascript
-const API_URL = 'https://tu-url.onrender.com';
-```
+## Paso 7: Dominio personalizado (api.thevoicewithinthepages.es)
 
-O mejor, usa una variable de entorno:
+Para que la API use `api.thevoicewithinthepages.es` (recomendado para cookies same-site y login en móviles):
 
-```javascript
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-```
-
-Y configura `VITE_API_URL` en tu entorno de producción del frontend.
+1. En Render → tu Web Service → **Settings** → **Custom Domains**
+2. Añade `api.thevoicewithinthepages.es`
+3. En tu proveedor DNS, crea un registro CNAME: `api` → `la-voz-de-las-paginas-api.onrender.com` (o el host que Render indique)
+4. Espera a que Render verifique el SSL (puede tardar unos minutos)
 
 ## Configuración de CORS
 

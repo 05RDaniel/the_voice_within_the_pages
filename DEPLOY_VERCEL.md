@@ -47,7 +47,7 @@ Haz clic en **"Environment Variables"** y añade:
 
 | Variable | Valor |
 |----------|-------|
-| `VITE_API_URL` | `https://la-voz-de-las-paginas-api.onrender.com` |
+| `VITE_API_URL` | `https://api.thevoicewithinthepages.es` |
 
 > **Importante**: Las variables de Vite deben comenzar con `VITE_` para estar disponibles en el cliente.
 
@@ -222,7 +222,7 @@ Después del despliegue tendrás:
 | Servicio | URL |
 |----------|-----|
 | Frontend (Vercel) | `https://tu-proyecto.vercel.app` |
-| Backend (Render) | `https://la-voz-de-las-paginas-api.onrender.com` |
+| Backend (Render) | `https://api.thevoicewithinthepages.es` |
 
 ## Enlaces Útiles
 

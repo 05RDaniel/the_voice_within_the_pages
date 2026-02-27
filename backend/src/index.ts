@@ -57,6 +57,7 @@ const sessionConfig: session.SessionOptions = {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     sameSite: isProduction ? "none" : "lax",
+    ...(isProduction && { domain: ".thevoicewithinthepages.es" }),
   },
 };
 let sessionPool: Pool | null = null;
