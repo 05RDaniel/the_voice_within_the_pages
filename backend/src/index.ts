@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
+import { Pool } from "pg";
 import authRoutes from "./routes/authRoutes";
 import contentRoutes from "./routes/contentRoutes";
 import quoteRoutes from "./routes/quoteRoutes";
@@ -42,22 +44,28 @@ app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 // Trust proxy for Render
 app.set('trust proxy', 1);
 
-// Session configuration
+// Session configuration – use PostgreSQL store in production, MemoryStore in dev (when no DB)
 const isProduction = process.env.NODE_ENV === "production";
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "the-voice-within-the-pages-secret-key",
-    resave: false,
-    saveUninitialized: false,
-    proxy: isProduction,
-    cookie: {
-      secure: isProduction,
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-      sameSite: isProduction ? "none" : "lax",
-    },
-  })
-);
+const PgSession = connectPgSimple(session);
+const sessionConfig: session.SessionOptions = {
+  secret: process.env.SESSION_SECRET || "the-voice-within-the-pages-secret-key",
+  resave: false,
+  saveUninitialized: false,
+  proxy: isProduction,
+  cookie: {
+    secure: isProduction,
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    sameSite: isProduction ? "none" : "lax",
+  },
+};
+if (process.env.DATABASE_URL) {
+  sessionConfig.store = new PgSession({
+    pool: new Pool({ connectionString: process.env.DATABASE_URL }),
+    tableName: "session",
+  });
+}
+app.use(session(sessionConfig));
 
 // Routes
 app.get("/health", (req, res) => {
