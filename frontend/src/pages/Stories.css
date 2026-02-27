@@ -616,4 +616,19 @@
     padding: 16px;
     padding-right: 48px;
   }
+
+  .story-modal-overlay {
+    padding: 12px;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  .story-modal {
+    margin: auto 0;
+    padding: 20px 16px;
+  }
+
+  .story-modal h2 {
+    font-size: 1.2rem;
+  }
 }

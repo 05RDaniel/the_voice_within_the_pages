@@ -82,3 +82,41 @@
 .page-content {
   /* Optional wrapper for content below sub-header */
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-main {
+    width: 95%;
+    padding: 20px 16px 24px 12px;
+  }
+
+  .page-subheader-title h1,
+  .page-subheader .page-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-main {
+    width: 100%;
+    padding: 16px 12px 20px 8px;
+  }
+
+  .page-subheader {
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .page-subheader-title h1,
+  .page-subheader .page-title {
+    font-size: 1.3rem;
+  }
+
+  .page-subheader .page-back-button {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+}

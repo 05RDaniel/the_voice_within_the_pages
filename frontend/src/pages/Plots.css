@@ -492,6 +492,19 @@
   padding: 20px;
 }
 
+@media (max-width: 480px) {
+  .plot-modal-overlay {
+    padding: 12px;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  .plots-timeline-modal.plot-modal,
+  .plots-confirm-modal.plot-modal {
+    margin: auto 0;
+  }
+}
+
 .plots-timeline-modal.plot-modal {
   background: #5a4a3a;
   border: 4px solid #2a1f0f;

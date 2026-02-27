@@ -123,3 +123,23 @@
 .register-verify-cta .link {
   font-weight: 700;
 }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .verify-email-container {
+    padding: 16px 12px;
+  }
+
+  .verify-email-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .verify-email-card h1 {
+    font-size: 1.3rem;
+  }
+
+  .verify-email-code-input {
+    font-size: 1.25rem;
+    letter-spacing: 0.25em;
+  }
+}

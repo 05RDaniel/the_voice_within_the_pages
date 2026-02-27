@@ -142,3 +142,49 @@
 .legal-page-light .legal-placeholder-inline {
   background: rgba(42, 31, 15, 0.12);
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .legal-page {
+    padding: 20px 12px 32px;
+  }
+
+  .legal-page-container {
+    max-width: 100%;
+  }
+
+  .legal-page-title {
+    font-size: 1.6rem;
+  }
+
+  .legal-content h2 {
+    font-size: 1.2rem;
+  }
+
+  .legal-content h3 {
+    font-size: 1.05rem;
+  }
+
+  .legal-content p,
+  .legal-content li {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .legal-page {
+    padding: 16px 10px 24px;
+  }
+
+  .legal-page-title {
+    font-size: 1.4rem;
+  }
+
+  .legal-content h2 {
+    font-size: 1.1rem;
+  }
+
+  .legal-content section {
+    margin-bottom: 24px;
+  }
+}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/useLanguage';
 import { useTutorial } from '../contexts/TutorialContext';
 import { api } from '../lib/api';
@@ -9,7 +9,7 @@ function Footer() {
   const [quote, setQuote] = useState(null);
   const [isVisible, setIsVisible] = useState(true);
   const [loading, setLoading] = useState(true);
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const location = useLocation();
   const { openTutorial } = useTutorial();
 
@@ -84,7 +84,47 @@ function Footer() {
     return (
       <footer className="app-footer">
         <div className="footer-content">
-          <span className="quote-loading">...</span>
+          <div className="footer-legal">
+            <Link to="/privacy">{t('privacyPolicy')}</Link>
+            <span className="footer-legal-sep">·</span>
+            <Link to="/cookies">{t('cookiePolicy')}</Link>
+          </div>
+          <div className="footer-quote">
+            <span className="quote-loading">...</span>
+          </div>
+          <div className="footer-help">
+            <button
+              type="button"
+              className="footer-help-icon"
+              onClick={() => openTutorial(location.pathname)}
+              aria-label={language === 'es' ? 'Abrir tutorial' : 'Open tutorial'}
+              title={language === 'es' ? 'Abrir tutorial' : 'Open tutorial'}
+            >
+              <i className="fa-solid fa-question" />
+            </button>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
+  return (
+    <footer className="app-footer">
+      <div className="footer-content">
+        <div className="footer-legal">
+          <Link to="/privacy">{t('privacyPolicy')}</Link>
+          <span className="footer-legal-sep">·</span>
+          <Link to="/cookies">{t('cookiePolicy')}</Link>
+        </div>
+        <div className="footer-quote">
+          {quote && (
+            <div className={`quote-container ${isVisible ? 'visible' : 'hidden'}`}>
+              <p className="quote-text">"{quote.quote}"</p>
+              {quote.author && <span className="quote-author">— {quote.author}</span>}
+            </div>
+          )}
+        </div>
+        <div className="footer-help">
           <button
             type="button"
             className="footer-help-icon"
@@ -95,28 +135,6 @@ function Footer() {
             <i className="fa-solid fa-question" />
           </button>
         </div>
-      </footer>
-    );
-  }
-
-  return (
-    <footer className="app-footer">
-      <div className="footer-content">
-        {quote && (
-          <div className={`quote-container ${isVisible ? 'visible' : 'hidden'}`}>
-            <p className="quote-text">"{quote.quote}"</p>
-            {quote.author && <span className="quote-author">— {quote.author}</span>}
-          </div>
-        )}
-        <button
-          type="button"
-          className="footer-help-icon"
-          onClick={() => openTutorial(location.pathname)}
-          aria-label={language === 'es' ? 'Abrir tutorial' : 'Open tutorial'}
-          title={language === 'es' ? 'Abrir tutorial' : 'Open tutorial'}
-        >
-          <i className="fa-solid fa-question" />
-        </button>
       </div>
     </footer>
   );

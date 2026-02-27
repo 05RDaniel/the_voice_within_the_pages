@@ -256,3 +256,29 @@
 [data-theme="light"] .tutorial-btn-next:hover {
   background: #5a9b5a;
 }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .tutorial-card {
+    max-width: calc(100vw - 24px);
+    padding: 1.25rem 1rem 1rem;
+    padding-top: 2rem;
+  }
+
+  .tutorial-card-title {
+    font-size: 1rem;
+  }
+
+  .tutorial-card-body {
+    font-size: 0.85rem;
+  }
+
+  .tutorial-card-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tutorial-card-actions {
+    justify-content: center;
+  }
+}
