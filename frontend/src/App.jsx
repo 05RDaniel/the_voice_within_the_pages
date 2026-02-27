@@ -15,6 +15,8 @@ import StoryOverview from './pages/StoryOverview';
 import StoryEditor from './pages/StoryEditor';
 import Plots from './pages/Plots';
 import TimelineView from './pages/TimelineView';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import CookiePolicy from './pages/CookiePolicy';
 import './App.css';
 
 function App() {
@@ -37,6 +39,8 @@ function App() {
                 <Route path="/story/:id/edit" element={<StoryEditor />} />
                 <Route path="/plots" element={<Plots />} />
                 <Route path="/timeline/:id" element={<TimelineView />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/cookies" element={<CookiePolicy />} />
               </Routes>
             </LayoutProvider>
             <TutorialOverlay />

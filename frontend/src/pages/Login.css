@@ -564,6 +564,12 @@
   color: #2a1f0f;
 }
 
+.login-legal-links {
+  margin-top: 0.75rem !important;
+  font-size: 0.85rem !important;
+  opacity: 0.9;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .login-container {

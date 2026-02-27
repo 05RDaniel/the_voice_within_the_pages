@@ -235,6 +235,11 @@ function Login() {
                 {t('noAccount')}{' '}
                 <Link to="/register" className="link">{t('registerHere')}</Link>
               </p>
+              <p className="login-legal-links">
+                <Link to="/privacy" className="link">{t('privacyPolicy')}</Link>
+                {' · '}
+                <Link to="/cookies" className="link">{t('cookiePolicy')}</Link>
+              </p>
             </div>
           </div>
         </div>

@@ -329,6 +329,11 @@ function Register() {
                     {t('hasAccount')}{' '}
                     <Link to="/login" className="link">{t('loginHere')}</Link>
                   </p>
+                  <p className="login-legal-links">
+                    <Link to="/privacy" className="link">{t('privacyPolicy')}</Link>
+                    {' · '}
+                    <Link to="/cookies" className="link">{t('cookiePolicy')}</Link>
+                  </p>
                 </div>
               </>
             )}

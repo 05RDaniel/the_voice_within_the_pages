@@ -1,0 +1,144 @@
+/* PrivacyPolicy.css - Legal page styling */
+.legal-page {
+  min-height: 100vh;
+  background: #1a1510;
+  color: #d4c4a8;
+  padding: 24px 16px 48px;
+}
+
+.legal-page-light {
+  background: #f5f0e8;
+  color: #2a1f0f;
+}
+
+.legal-page-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.legal-page-header {
+  margin-bottom: 32px;
+}
+
+.legal-back-link {
+  display: inline-block;
+  color: #c4b498;
+  text-decoration: none;
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+  transition: color 0.15s;
+}
+
+.legal-back-link:hover {
+  color: #e4d4b8;
+}
+
+.legal-page-light .legal-back-link {
+  color: #6b5b4a;
+}
+
+.legal-page-light .legal-back-link:hover {
+  color: #2a1f0f;
+}
+
+.legal-page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  font-family: Georgia, serif;
+}
+
+.legal-page-subtitle {
+  font-size: 1.1rem;
+  margin: 0 0 4px;
+  opacity: 0.9;
+}
+
+.legal-page-date {
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.7;
+}
+
+.legal-content {
+  line-height: 1.65;
+}
+
+.legal-content section {
+  margin-bottom: 32px;
+}
+
+.legal-content h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: #d4c4a8;
+  border-bottom: 1px solid rgba(196, 180, 152, 0.3);
+  padding-bottom: 6px;
+}
+
+.legal-page-light .legal-content h2 {
+  color: #2a1f0f;
+  border-bottom-color: rgba(42, 31, 15, 0.2);
+}
+
+.legal-content h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 20px 0 10px;
+}
+
+.legal-content p,
+.legal-content li {
+  margin: 0 0 10px;
+  font-size: 0.98rem;
+}
+
+.legal-content ul {
+  margin: 0 0 16px;
+  padding-left: 1.5em;
+}
+
+.legal-content a {
+  color: #c4b498;
+  text-decoration: underline;
+}
+
+.legal-content a:hover {
+  color: #e4d4b8;
+}
+
+.legal-page-light .legal-content a {
+  color: #6b5b4a;
+}
+
+.legal-page-light .legal-content a:hover {
+  color: #2a1f0f;
+}
+
+.legal-placeholder {
+  background: rgba(196, 180, 152, 0.1);
+  border: 1px dashed rgba(196, 180, 152, 0.4);
+  padding: 16px;
+  margin: 12px 0;
+  border-radius: 4px;
+}
+
+.legal-page-light .legal-placeholder {
+  background: rgba(42, 31, 15, 0.06);
+  border-color: rgba(42, 31, 15, 0.25);
+}
+
+.legal-placeholder p {
+  margin: 4px 0;
+}
+
+.legal-placeholder-inline {
+  background: rgba(196, 180, 152, 0.2);
+  padding: 0 4px;
+  border-radius: 2px;
+}
+
+.legal-page-light .legal-placeholder-inline {
+  background: rgba(42, 31, 15, 0.12);
+}
