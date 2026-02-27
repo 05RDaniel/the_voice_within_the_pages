@@ -59,9 +59,11 @@ const sessionConfig: session.SessionOptions = {
     sameSite: isProduction ? "none" : "lax",
   },
 };
+let sessionPool: Pool | null = null;
 if (process.env.DATABASE_URL) {
+  sessionPool = new Pool({ connectionString: process.env.DATABASE_URL });
   sessionConfig.store = new PgSession({
-    pool: new Pool({ connectionString: process.env.DATABASE_URL }),
+    pool: sessionPool,
     tableName: "session",
   });
 }
@@ -89,6 +91,25 @@ app.use((err: unknown, req: express.Request, res: express.Response, next: expres
   res.status(500).json({ error: "Something went wrong!", message: error.message });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+async function ensureSessionTable(): Promise<void> {
+  if (!sessionPool) return;
+  await sessionPool.query(`
+    CREATE TABLE IF NOT EXISTS "session" (
+      "sid" varchar NOT NULL PRIMARY KEY,
+      "sess" json NOT NULL,
+      "expire" timestamp(6) NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");
+  `);
+}
+
+ensureSessionTable()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to ensure session table:", err);
+    process.exit(1);
+  });
