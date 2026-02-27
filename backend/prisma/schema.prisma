@@ -58,9 +58,9 @@ model Story {
   id         String     @id @default(cuid())
   title      String
   visibility Visibility @default(PRIVATE)
-  content    String?     @db.Text
   authorId   String
   author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  chapters   Chapter[]
   timelines  Timeline[]
   characters Character[]
   createdAt  DateTime   @default(now())
@@ -69,6 +69,21 @@ model Story {
   @@index([authorId])
   @@index([authorId, createdAt])
   @@index([visibility])
+}
+
+model Chapter {
+  id         String     @id @default(cuid())
+  name       String
+  content    String     @db.Text
+  visibility Visibility @default(PRIVATE)
+  order      Int        @default(0)
+  storyId    String
+  story      Story      @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([storyId])
+  @@index([storyId, order])
 }
 
 model Character {

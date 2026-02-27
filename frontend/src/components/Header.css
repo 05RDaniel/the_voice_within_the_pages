@@ -97,6 +97,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 8px;
   flex-shrink: 0;
   min-width: 80px;
 }
@@ -308,9 +309,11 @@
   background: #7b6d5f;
 }
 
-/* Idioma: icono + desplegable */
+/* Idioma: icono en header + desplegable */
 .header-language-wrap {
   position: relative;
+  z-index: 1002;
+  flex-shrink: 0;
 }
 
 .header-language-trigger {
@@ -319,9 +322,9 @@
 
 .header-language-dropdown {
   position: absolute;
-  bottom: 100%;
+  top: 100%;
   left: 0;
-  margin: 0 0 6px 0;
+  margin: 6px 0 0 0;
   padding: 6px 0;
   list-style: none;
   background: #4a3f32;

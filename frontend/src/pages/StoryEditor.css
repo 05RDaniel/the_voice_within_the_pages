@@ -227,6 +227,396 @@
   text-align: center;
 }
 
+/* Body with chapters sidebar + main */
+.editor-body-with-chapters {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.editor-chapters-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: #4a3f2f;
+  border-right: 2px solid #2a1f0f;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+[data-theme="light"] .editor-chapters-sidebar {
+  background: #e8dcc8;
+  border-right-color: #8b7355;
+}
+
+.editor-chapters-head {
+  padding: 12px 14px;
+  border-bottom: 2px solid #2a1f0f;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+[data-theme="light"] .editor-chapters-head {
+  border-bottom-color: #8b7355;
+}
+
+.editor-chapters-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #c4b498;
+  text-transform: uppercase;
+  font-family: Arial, sans-serif;
+}
+
+[data-theme="light"] .editor-chapters-title {
+  color: #3a2f1f;
+}
+
+.editor-add-chapter-btn {
+  padding: 6px 10px;
+  background: #5a4a3a;
+  color: #d4c4a8;
+  border: 2px solid #2a1f0f;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.1s;
+}
+
+.editor-add-chapter-btn:hover:not(:disabled) {
+  background: #6b5d4f;
+  color: #faf6ed;
+}
+
+.editor-add-chapter-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+[data-theme="light"] .editor-add-chapter-btn {
+  background: #c4b498;
+  color: #2a1f0f;
+  border-color: #8b7355;
+}
+
+[data-theme="light"] .editor-add-chapter-btn:hover:not(:disabled) {
+  background: #d4c4a8;
+}
+
+.editor-chapters-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.editor-chapters-list > li {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.editor-chapter-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #3a2f1f;
+  border: 2px solid #2a1f0f;
+  color: #d4c4a8;
+  font-size: 0.9rem;
+  font-family: Arial, sans-serif;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.1s;
+  border-radius: 4px;
+  min-width: 0;
+}
+
+.editor-chapter-item:hover {
+  background: #4a3f32;
+  color: #faf6ed;
+}
+
+.editor-chapter-item.active {
+  background: #5a4a3a;
+  border-color: #8b7355;
+  color: #faf6ed;
+}
+
+.editor-chapter-num {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: #8b7355;
+  min-width: 1.2em;
+}
+
+.editor-chapter-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-chapter-vis {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+.editor-chapter-delete {
+  flex-shrink: 0;
+  padding: 8px 10px;
+  background: transparent;
+  border: 2px solid transparent;
+  color: #8b6355;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.1s;
+}
+
+.editor-chapter-delete:hover {
+  background: #5a2a2a;
+  color: #e8c4c4;
+  border-color: #8b4a4a;
+}
+
+[data-theme="light"] .editor-chapter-item {
+  background: #d4c4a8;
+  border-color: #8b7355;
+  color: #2a1f0f;
+}
+
+[data-theme="light"] .editor-chapter-item:hover {
+  background: #c4b498;
+}
+
+[data-theme="light"] .editor-chapter-item.active {
+  background: #8b7355;
+  border-color: #5a4a3a;
+  color: #faf6ed;
+}
+
+[data-theme="light"] .editor-chapter-delete:hover {
+  background: #e8c4c4;
+  color: #8b4a4a;
+}
+
+.editor-chapters-empty {
+  padding: 16px 14px;
+  color: #8b7355;
+  font-size: 0.9rem;
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+[data-theme="light"] .editor-chapters-empty {
+  color: #5a4a3a;
+}
+
+.editor-chapter-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  border-bottom: 1px solid #2a1f0f;
+  background: #3a2f1f;
+  flex-wrap: wrap;
+}
+
+[data-theme="light"] .editor-chapter-meta {
+  background: #e8dfd0;
+  border-bottom-color: #8b7355;
+}
+
+.editor-chapter-header {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 8px 24px;
+  border-bottom: 2px solid #2a1f0f;
+  background: #4a3f2f;
+  flex-wrap: wrap;
+}
+
+[data-theme="light"] .editor-chapter-header {
+  background: #d4c4a8;
+  border-bottom-color: #8b7355;
+}
+
+.editor-format-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.editor-format-btn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #3a2f1f;
+  border: 2px solid #2a1f0f;
+  color: #d4c4a8;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.15s, color 0.15s;
+}
+
+.editor-format-btn:hover {
+  background: #5a4a3a;
+  color: #faf6ed;
+}
+
+.editor-format-btn.is-active {
+  background: #2a1f0f;
+  color: #c4b498;
+}
+
+.editor-format-btn.is-active:hover {
+  background: #3a2f1f;
+  color: #d4c4a8;
+}
+
+[data-theme="light"] .editor-format-btn {
+  background: #f0e6d0;
+  border-color: #8b7355;
+  color: #2a1f0f;
+}
+
+[data-theme="light"] .editor-format-btn:hover {
+  background: #e0d4b8;
+  color: #1a1208;
+}
+
+[data-theme="light"] .editor-format-btn.is-active {
+  background: #c4b498;
+  color: #1a1208;
+}
+
+[data-theme="light"] .editor-format-btn.is-active:hover {
+  background: #b4a488;
+  color: #0a0502;
+}
+
+.editor-chapter-name-input {
+  flex: 1;
+  min-width: 160px;
+  padding: 8px 12px;
+  background: #3a2f1f;
+  border: 2px solid #2a1f0f;
+  color: #d4c4a8;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: Georgia, serif;
+  border-radius: 4px;
+}
+
+.editor-chapter-name-input:focus {
+  outline: none;
+  border-color: #8b7355;
+}
+
+[data-theme="light"] .editor-chapter-name-input {
+  background: #f5efe0;
+  border-color: #8b7355;
+  color: #2a1f0f;
+}
+
+.editor-chapter-visibility {
+  padding: 8px 12px;
+  background: #3a2f1f;
+  border: 2px solid #2a1f0f;
+  color: #d4c4a8;
+  font-size: 0.9rem;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+[data-theme="light"] .editor-chapter-visibility {
+  background: #f0e6d0;
+  border-color: #8b7355;
+  color: #2a1f0f;
+}
+
+.editor-no-chapter {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px;
+  color: #8b7355;
+  font-size: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+[data-theme="light"] .editor-no-chapter {
+  color: #5a4a3a;
+}
+
+.editor-add-chapter-btn-large {
+  padding: 12px 24px;
+  background: #5a4a3a;
+  color: #d4c4a8;
+  border: 2px solid #2a1f0f;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.1s;
+}
+
+.editor-add-chapter-btn-large:hover:not(:disabled) {
+  background: #6b5d4f;
+  color: #faf6ed;
+}
+
+[data-theme="light"] .editor-add-chapter-btn-large {
+  background: #8b7355;
+  color: #faf6ed;
+  border-color: #5a4a3a;
+}
+
+[data-theme="light"] .editor-add-chapter-btn-large:hover:not(:disabled) {
+  background: #7b6345;
+}
+
+.editor-body-with-chapters .editor-main {
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0;
+}
+
+.editor-body-with-chapters .editor-content {
+  flex: 1;
+  min-height: 200px;
+  border: none;
+  border-radius: 0;
+  padding: 24px;
+}
+
 .editor-error-page {
   display: flex;
   flex-direction: column;

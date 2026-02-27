@@ -55,6 +55,8 @@ function StoryOverview() {
   const [creatingCharacter, setCreatingCharacter] = useState(false);
   const [updatingCharacter, setUpdatingCharacter] = useState(false);
   const [deletingCharacter, setDeletingCharacter] = useState(false);
+  const [chapterVisibilityModal, setChapterVisibilityModal] = useState(null);
+  const [updatingChapterVisibility, setUpdatingChapterVisibility] = useState(false);
 
   const handleCreateCharacter = async (e) => {
     e.preventDefault();
@@ -148,6 +150,45 @@ function StoryOverview() {
 
   const timelines = story.timelines || [];
   const characters = story.characters || [];
+  const chapters = story.chapters || [];
+
+  const getFirstPhrase = (content) => {
+    if (!content || typeof content !== 'string') return '';
+    const trimmed = content.trim();
+    if (!trimmed) return '';
+    const match = trimmed.match(/^[^.!?]*[.!?]?/);
+    const first = match ? match[0].trim() : trimmed.slice(0, 80);
+    return first.length < trimmed.length ? first + '…' : first;
+  };
+
+  const getVisibilityIcon = (vis) => {
+    switch (vis) {
+      case 'PUBLIC': return <i className="fa-solid fa-globe" title={t('public')} />;
+      case 'PRIVATE': return <i className="fa-solid fa-lock" title={t('private')} />;
+      default: return null;
+    }
+  };
+
+  const handleConfirmChapterVisibility = async () => {
+    if (!chapterVisibilityModal) return;
+    const { chapter, newVisibility } = chapterVisibilityModal;
+    setUpdatingChapterVisibility(true);
+    setSectionError('');
+    try {
+      const response = await api.put(`/api/stories/${id}/chapters/${chapter.id}`, {
+        visibility: newVisibility,
+      });
+      if (response.error) setSectionError(response.error);
+      else {
+        setChapterVisibilityModal(null);
+        await fetchStory();
+      }
+    } catch (err) {
+      setSectionError(t('errorLoadingStory'));
+    } finally {
+      setUpdatingChapterVisibility(false);
+    }
+  };
 
   return (
     <div className="story-overview-container">
@@ -188,7 +229,7 @@ function StoryOverview() {
             </div>
           </aside>
 
-          {/* Centro: sección vacía */}
+          {/* Centro: capítulos */}
           <main className="story-overview-center">
             <div className="story-overview-center-inner">
               <div className="story-overview-actions">
@@ -201,9 +242,46 @@ function StoryOverview() {
                   <span>{t('editStory')}</span>
                 </button>
               </div>
-              <div className="story-overview-center-placeholder" aria-hidden="true">
-                {/* Sección central: por el momento vacía */}
-              </div>
+              <section className="story-overview-chapters-section" aria-label={t('chapters')}>
+                <h2 className="story-overview-chapters-title">
+                  <i className="fa-solid fa-book-open" />
+                  {t('chapters')}
+                </h2>
+                {chapters.length === 0 ? (
+                  <p className="story-overview-empty">{t('noChaptersYet')}</p>
+                ) : (
+                  <ul className="story-overview-chapters-list">
+                    {chapters.map((ch) => (
+                      <li key={ch.id} className="story-overview-chapter-card">
+                        <div className="story-overview-chapter-main">
+                          <div className="story-overview-chapter-info">
+                            <h3 className="story-overview-chapter-name">{ch.name || t('untitledChapter')}</h3>
+                            {ch.content && (
+                              <p className="story-overview-chapter-preview">{getFirstPhrase(ch.content)}</p>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            className="story-overview-chapter-privacy-btn"
+                            onClick={() => {
+                            const next = { PRIVATE: 'PUBLIC', PUBLIC: 'UNLISTED', UNLISTED: 'PRIVATE' }[ch.visibility] || 'PUBLIC';
+                            setChapterVisibilityModal({ chapter: ch, newVisibility: next });
+                          }}
+                            title={t('changeChapterVisibility')}
+                            aria-label={t('changeChapterVisibility')}
+                          >
+                            {ch.visibility === 'PRIVATE' ? (
+                              <i className="fa-solid fa-lock" />
+                            ) : (
+                              <i className="fa-solid fa-lock-open" />
+                            )}
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
             </div>
           </main>
 
@@ -307,6 +385,28 @@ function StoryOverview() {
           </div>
         </div>
       )}
+
+      {/* Change chapter visibility confirm */}
+      {chapterVisibilityModal && (() => {
+        const visLabel = { PUBLIC: t('public'), PRIVATE: t('private') }[chapterVisibilityModal.newVisibility] || chapterVisibilityModal.newVisibility;
+        const chapterName = `"${chapterVisibilityModal.chapter.name || t('untitledChapter')}"`;
+        const confirmText = t('confirmChangeChapterVisibilityMessage')
+          .replace('{name}', chapterName)
+          .replace('{visibility}', visLabel);
+        return (
+          <div className="story-overview-modal-overlay" onClick={() => !updatingChapterVisibility && setChapterVisibilityModal(null)}>
+            <div className="story-overview-modal story-overview-confirm-modal" onClick={(e) => e.stopPropagation()}>
+              <p className="story-overview-confirm-msg story-overview-confirm-msg-long">{confirmText}</p>
+              <div className="story-overview-modal-buttons">
+                <button type="button" className="story-overview-cancel-btn" onClick={() => setChapterVisibilityModal(null)} disabled={updatingChapterVisibility}>{t('cancel')}</button>
+                <button type="button" className="story-overview-submit-btn" onClick={handleConfirmChapterVisibility} disabled={updatingChapterVisibility}>
+                  {updatingChapterVisibility ? t('saving') : t('confirm')}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       <Footer />
     </div>
