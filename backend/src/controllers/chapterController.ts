@@ -3,12 +3,18 @@ import { prisma } from "../lib/prisma";
 
 const validVisibilities = ["PUBLIC", "PRIVATE"] as const;
 
+function param(req: Request, key: string): string | undefined {
+  const v = req.params[key];
+  return Array.isArray(v) ? v[0] : v;
+}
+
 export const getChapters = async (req: Request, res: Response) => {
   try {
     const userId = (req.session as any)?.userId;
     if (!userId) return res.status(401).json({ error: "No autenticado" });
 
-    const storyId = req.params.storyId as string;
+    const storyId = param(req, "storyId");
+    if (!storyId) return res.status(400).json({ error: "storyId requerido" });
     const story = await prisma.story.findUnique({
       where: { id: storyId },
       select: { id: true, authorId: true, visibility: true },
@@ -42,17 +48,19 @@ export const getChapter = async (req: Request, res: Response) => {
     const userId = (req.session as any)?.userId;
     if (!userId) return res.status(401).json({ error: "No autenticado" });
 
-    const { storyId, chapterId } = req.params;
+    const storyId = param(req, "storyId");
+    const chapterId = param(req, "chapterId");
+    if (!storyId || !chapterId) return res.status(400).json({ error: "storyId y chapterId requeridos" });
     const chapter = await prisma.chapter.findUnique({
       where: { id: chapterId, storyId },
       include: { story: { select: { authorId: true, visibility: true } } },
     });
     if (!chapter) return res.status(404).json({ error: "Capítulo no encontrado" });
-    const story = chapter.story as any;
-    if (story.visibility === "PRIVATE" && story.authorId !== userId) {
+    const storyRel = (chapter as { story: { authorId: string; visibility: string } }).story;
+    if (storyRel.visibility === "PRIVATE" && storyRel.authorId !== userId) {
       return res.status(403).json({ error: "No tienes acceso" });
     }
-    const { story: _, ...chapterData } = chapter;
+    const { story: _, ...chapterData } = chapter as typeof chapter & { story: unknown };
     res.json({ chapter: chapterData });
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el capítulo" });
@@ -64,7 +72,8 @@ export const createChapter = async (req: Request, res: Response) => {
     const userId = (req.session as any)?.userId;
     if (!userId) return res.status(401).json({ error: "No autenticado" });
 
-    const storyId = req.params.storyId as string;
+    const storyId = param(req, "storyId");
+    if (!storyId) return res.status(400).json({ error: "storyId requerido" });
     const story = await prisma.story.findUnique({
       where: { id: storyId },
       select: { authorId: true },
@@ -111,13 +120,15 @@ export const updateChapter = async (req: Request, res: Response) => {
     const userId = (req.session as any)?.userId;
     if (!userId) return res.status(401).json({ error: "No autenticado" });
 
-    const { storyId, chapterId } = req.params;
+    const storyId = param(req, "storyId");
+    const chapterId = param(req, "chapterId");
+    if (!storyId || !chapterId) return res.status(400).json({ error: "storyId y chapterId requeridos" });
     const existing = await prisma.chapter.findUnique({
       where: { id: chapterId, storyId },
       include: { story: { select: { authorId: true } } },
     });
     if (!existing) return res.status(404).json({ error: "Capítulo no encontrado" });
-    if ((existing.story as any).authorId !== userId) {
+    if ((existing as { story: { authorId: string } }).story.authorId !== userId) {
       return res.status(403).json({ error: "No tienes permiso para editar este capítulo" });
     }
 
@@ -154,13 +165,15 @@ export const deleteChapter = async (req: Request, res: Response) => {
     const userId = (req.session as any)?.userId;
     if (!userId) return res.status(401).json({ error: "No autenticado" });
 
-    const { storyId, chapterId } = req.params;
+    const storyId = param(req, "storyId");
+    const chapterId = param(req, "chapterId");
+    if (!storyId || !chapterId) return res.status(400).json({ error: "storyId y chapterId requeridos" });
     const existing = await prisma.chapter.findUnique({
       where: { id: chapterId, storyId },
       include: { story: { select: { authorId: true } } },
     });
     if (!existing) return res.status(404).json({ error: "Capítulo no encontrado" });
-    if ((existing.story as any).authorId !== userId) {
+    if ((existing as { story: { authorId: string } }).story.authorId !== userId) {
       return res.status(403).json({ error: "No tienes permiso para eliminar este capítulo" });
     }
 
