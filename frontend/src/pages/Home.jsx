@@ -22,7 +22,7 @@ function Home() {
   }, [setOnTutorialOpen]);
 
   useEffect(() => {
-    setPageTitle(t('welcome'));
+    setPageTitle(t(''));
     setBackUrl(null);
   }, [t, setPageTitle, setBackUrl]);
 

@@ -11,7 +11,7 @@ function Stories() {
   const [stories, setStories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showNewStoryForm, setShowNewStoryForm] = useState(false);
-  const [newStory, setNewStory] = useState({ title: '', visibility: 'PRIVATE' });
+  const [newStory, setNewStory] = useState({ title: '' });
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
@@ -59,7 +59,7 @@ function Stories() {
         setError(response.error);
       } else {
         setStories([response.story, ...stories]);
-        setNewStory({ title: '', visibility: 'PRIVATE' });
+        setNewStory({ title: '' });
         setShowNewStoryForm(false);
       }
     } catch (err) {
@@ -102,8 +102,6 @@ function Stories() {
         return <i className="fa-solid fa-globe" title={t('public')}></i>;
       case 'PRIVATE':
         return <i className="fa-solid fa-lock" title={t('private')}></i>;
-      case 'UNLISTED':
-        return <i className="fa-solid fa-link" title={t('unlisted')}></i>;
       default:
         return null;
     }
@@ -220,19 +218,6 @@ function Stories() {
                     disabled={creating}
                     placeholder={t('storyTitlePlaceholder')}
                   />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="visibility">{t('visibility')}</label>
-                  <select
-                    id="visibility"
-                    value={newStory.visibility}
-                    onChange={(e) => setNewStory({ ...newStory, visibility: e.target.value })}
-                    disabled={creating}
-                  >
-                    <option value="PRIVATE">{t('private')}</option>
-                    <option value="PUBLIC">{t('public')}</option>
-                    <option value="UNLISTED">{t('unlisted')}</option>
-                  </select>
                 </div>
                 <div className="modal-buttons">
                   <button 

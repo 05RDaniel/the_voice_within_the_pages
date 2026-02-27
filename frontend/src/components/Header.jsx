@@ -26,12 +26,14 @@ function Header() {
       if (menuOpen && !event.target.closest('.header-menu-container')) {
         setMenuOpen(false);
         setScriptoriumOpen(false);
+      }
+      if (languageDropdownOpen && !event.target.closest('.header-language-wrap')) {
         setLanguageDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [menuOpen]);
+  }, [menuOpen, languageDropdownOpen]);
 
   useEffect(() => {
     if (!showLogoutConfirm) return;
@@ -96,16 +98,54 @@ function Header() {
           <h1 className="header-title">{pageTitle || '\u00A0'}</h1>
         </div>
 
-        {/* Right: Menu dropdown */}
+        {/* Right: Tema + Idioma + Menu dropdown */}
         <div className="header-right">
+          <button
+            type="button"
+            className="header-icon-btn"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? t('lightMode') : t('darkMode')}
+            aria-label={theme === 'dark' ? t('lightMode') : t('darkMode')}
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+          <div className="header-language-wrap">
+            <button
+              type="button"
+              className="header-icon-btn header-language-trigger"
+              onClick={() => setLanguageDropdownOpen((o) => !o)}
+              title={t('languageLabel')}
+              aria-expanded={languageDropdownOpen}
+              aria-haspopup="true"
+            >
+              <i className="fa-solid fa-language" />
+            </button>
+            {languageDropdownOpen && (
+              <ul className="header-language-dropdown" role="menu">
+                {LANGUAGES.map(({ code, label }) => (
+                  <li key={code} role="none">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={`header-language-option ${language === code ? 'active' : ''}`}
+                      onClick={() => {
+                        setLanguage(code);
+                        setLanguageDropdownOpen(false);
+                      }}
+                    >
+                      {label}
+                      {language === code && <i className="fa-solid fa-check" />}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <div className="header-menu-container">
             <button
               type="button"
               className="header-menu-trigger"
-              onClick={() => {
-                if (menuOpen) setLanguageDropdownOpen(false);
-                setMenuOpen((o) => !o);
-              }}
+              onClick={() => setMenuOpen((o) => !o)}
               aria-expanded={menuOpen}
               aria-haspopup="true"
               data-tutorial-target="menu"
@@ -166,49 +206,6 @@ function Header() {
                     </button>
                   </li>
                 </ul>
-                <div className="header-dropdown-divider" />
-                <div className="header-dropdown-actions">
-                  <div className="header-language-wrap">
-                    <button
-                      type="button"
-                      className="header-dropdown-action header-language-trigger"
-                      onClick={() => setLanguageDropdownOpen((o) => !o)}
-                      title={t('languageLabel')}
-                      aria-expanded={languageDropdownOpen}
-                      aria-haspopup="true"
-                    >
-                      <i className="fa-solid fa-language" />
-                    </button>
-                    {languageDropdownOpen && (
-                      <ul className="header-language-dropdown" role="menu">
-                        {LANGUAGES.map(({ code, label }) => (
-                          <li key={code} role="none">
-                            <button
-                              type="button"
-                              role="menuitem"
-                              className={`header-language-option ${language === code ? 'active' : ''}`}
-                              onClick={() => {
-                                setLanguage(code);
-                                setLanguageDropdownOpen(false);
-                              }}
-                            >
-                              {label}
-                              {language === code && <i className="fa-solid fa-check" />}
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    className="header-dropdown-action"
-                    onClick={() => { toggleTheme(); setMenuOpen(false); }}
-                    title={theme === 'dark' ? t('lightMode') : t('darkMode')}
-                  >
-                    {theme === 'dark' ? '☀️' : '🌙'}
-                  </button>
-                </div>
                 <div className="header-dropdown-divider" />
                 <ul className="header-dropdown-list">
                   <li>

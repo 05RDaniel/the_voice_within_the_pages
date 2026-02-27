@@ -15,13 +15,19 @@ export const getMyStories = async (req: Request, res: Response) => {
       select: {
         id: true,
         title: true,
-        visibility: true,
         createdAt: true,
         updatedAt: true,
+        chapters: { select: { visibility: true } },
       },
     });
 
-    res.json({ stories });
+    const storiesWithVisibility = stories.map((s) => {
+      const visibility = (s.chapters as any[]).some((c) => c.visibility === "PUBLIC") ? "PUBLIC" : "PRIVATE";
+      const { chapters: _, ...rest } = s;
+      return { ...rest, visibility };
+    });
+
+    res.json({ stories: storiesWithVisibility });
   } catch (error) {
     console.error("Get stories error:", error);
     res.status(500).json({ error: "Error al obtener las historias" });
@@ -36,21 +42,16 @@ export const createStory = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "No autenticado" });
     }
 
-    const { title, content, visibility } = req.body;
+    const { title } = req.body;
 
     if (!title) {
       return res.status(400).json({ error: "El título es requerido" });
     }
 
-    // Validate visibility
-    const validVisibilities = ["PUBLIC", "PRIVATE", "UNLISTED"];
-    const storyVisibility = validVisibilities.includes(visibility) ? visibility : "PRIVATE";
-
     const story = await prisma.story.create({
       data: {
         title,
-        content: content || '',
-        visibility: storyVisibility,
+        visibility: "PRIVATE",
         authorId: userId,
         timelines: {
           create: {}
@@ -59,15 +60,10 @@ export const createStory = async (req: Request, res: Response) => {
       select: {
         id: true,
         title: true,
-        content: true,
         visibility: true,
         createdAt: true,
         updatedAt: true,
-        timelines: {
-          select: {
-            id: true,
-          }
-        }
+        timelines: { select: { id: true } },
       },
     });
 
@@ -92,6 +88,18 @@ export const getStory = async (req: Request, res: Response) => {
             username: true,
           },
         },
+        chapters: {
+          orderBy: { order: "asc" },
+          select: {
+            id: true,
+            name: true,
+            content: true,
+            visibility: true,
+            order: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
         timelines: {
           select: {
             id: true,
@@ -107,12 +115,14 @@ export const getStory = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Historia no encontrada" });
     }
 
-    // Check access permissions
-    if (story.visibility === "PRIVATE" && story.authorId !== userId) {
+    const storyVisibility = (story.chapters as any[]).some((c) => c.visibility === "PUBLIC") ? "PUBLIC" : "PRIVATE";
+    const storyResponse = { ...story, visibility: storyVisibility };
+
+    if (storyVisibility === "PRIVATE" && story.authorId !== userId) {
       return res.status(403).json({ error: "No tienes acceso a esta historia" });
     }
 
-    res.json({ story });
+    res.json({ story: storyResponse });
   } catch (error) {
     console.error("Get story error:", error);
     res.status(500).json({ error: "Error al obtener la historia" });
@@ -128,11 +138,11 @@ export const updateStory = async (req: Request, res: Response) => {
     }
 
     const id = req.params.id as string;
-    const { title, visibility, content } = req.body;
+    const { title } = req.body;
 
-    // Check if story exists and belongs to user
     const existingStory = await prisma.story.findUnique({
       where: { id },
+      include: { chapters: { select: { visibility: true } } },
     });
 
     if (!existingStory) {
@@ -143,29 +153,24 @@ export const updateStory = async (req: Request, res: Response) => {
       return res.status(403).json({ error: "No tienes permiso para editar esta historia" });
     }
 
-    // Validate visibility if provided
-    const validVisibilities = ["PUBLIC", "PRIVATE", "UNLISTED"];
     const updateData: any = {};
-    
     if (title) updateData.title = title;
-    if (visibility && validVisibilities.includes(visibility)) {
-      updateData.visibility = visibility;
-    }
 
-    const story = await prisma.story.update({
+    const updated = await prisma.story.update({
       where: { id },
       data: updateData,
       select: {
         id: true,
         title: true,
-        visibility: true,
-        content: true,
         createdAt: true,
         updatedAt: true,
+        chapters: { select: { visibility: true } },
       },
     });
 
-    res.json({ story });
+    const visibility = (updated.chapters as any[]).some((c) => c.visibility === "PUBLIC") ? "PUBLIC" : "PRIVATE";
+    const { chapters: _, ...story } = updated;
+    res.json({ story: { ...story, visibility } });
   } catch (error) {
     console.error("Update story error:", error);
     res.status(500).json({ error: "Error al actualizar la historia" });
