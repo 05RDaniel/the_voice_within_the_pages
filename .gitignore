@@ -3,6 +3,9 @@ node_modules/
 .pnp
 .pnp.js
 
+# Legacy backend (Express/Prisma), kept locally for reference during the FastAPI migration
+backend-old/
+
 # Testing
 coverage/
 

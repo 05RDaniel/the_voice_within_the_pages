@@ -11,21 +11,19 @@ npm install
 
 ```bash
 cd backend
-npm install
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 
 # Configurar .env (edita con tus credenciales de PostgreSQL)
+cp env.example .env
 # DATABASE_URL="postgresql://user:password@localhost:5432/la_voz_de_las_paginas"
 
-# Generar Prisma Client
-npx prisma generate
-
-# Crear base de datos y tablas
-npx prisma db push
-# o para migraciones:
-# npx prisma migrate dev --name init
+# Aplicar migraciones
+alembic upgrade head
 
 # Iniciar servidor
-npm run dev
+uvicorn app.main:app --reload --port 5000
 ```
 
 ### 3. Frontend
@@ -57,16 +55,16 @@ Esto ejecutará frontend y backend simultáneamente.
 
 ## Próximos Pasos
 
-1. Implementar rutas de autenticación en `backend/src/routes/`
-2. Crear controladores en `backend/src/controllers/`
+1. Añadir nuevas rutas en `backend/app/routers/`
+2. Añadir nuevos modelos en `backend/app/models/` y generar la migración con Alembic
 3. Implementar funcionalidad de texto a voz
 4. Crear componentes React para la interfaz
 
 ## Notas
 
-- El backend está configurado para usar **Session-based** por defecto
-- Puedes cambiar a **JWT** editando `backend/src/middleware/auth.ts`
-- El esquema de Prisma incluye modelos User y Content
+- El backend está configurado para usar **Session-based** (cookie + tabla `sessions` en Postgres) por defecto
+- La dependencia `require_user_id` en `backend/app/deps.py` protege las rutas autenticadas
+- Los modelos SQLAlchemy incluyen User, Content, Quote, Story, Chapter, Character, Timeline, Note y Plot
 
 
 

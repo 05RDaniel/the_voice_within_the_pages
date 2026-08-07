@@ -47,5 +47,5 @@
 ## Stack
 
 - **Frontend:** React (Vite), React Router, CSS. Contextos de tema e idioma.
-- **Backend:** Express (TypeScript), Prisma, PostgreSQL. API REST bajo `/api/*`.
-- **Auth:** Sesión con cookie; bcrypt para contraseñas.
+- **Backend:** FastAPI (Python), SQLAlchemy, PostgreSQL. API REST bajo `/api/*`.
+- **Auth:** Sesión con cookie respaldada en tabla `sessions`; bcrypt para contraseñas.

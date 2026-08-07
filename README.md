@@ -5,8 +5,8 @@
 ## Highlights
 
 - Narrative workspace: create and edit stories (plain-text editor with chapter separators), attach timelines and plots, manage characters per story.
-- Separate React (Vite) frontend and Express (TypeScript) backend; session-based auth and REST API.
-- PostgreSQL + Prisma; domain model with User, Story, Timeline, Plot, Character, Note, and Quote.
+- Separate React (Vite) frontend and FastAPI (Python) backend; session-based auth and REST API.
+- PostgreSQL + SQLAlchemy; domain model with User, Story, Timeline, Plot, Character, Note, and Quote.
 - Email verification on signup (6-digit code). Deployable to Vercel (frontend) and Render (backend).
 
 ---
@@ -61,28 +61,28 @@ User, Story, Timeline, Plot, Content, Quote (and enums such as Visibility).
 | Layer | Technology |
 |-------|------------|
 | **Frontend** | React 19, Vite 7, React Router 7, CSS |
-| **Backend** | Node.js, Express 4, TypeScript |
-| **Database** | PostgreSQL, Prisma ORM |
-| **Authentication** | Session-based (express-session), bcrypt for passwords |
-| **Tooling** | Zod (validation in backend), ESLint, tsx (dev) |
+| **Backend** | Python, FastAPI, SQLAlchemy (async) |
+| **Database** | PostgreSQL, SQLAlchemy ORM + Alembic migrations |
+| **Authentication** | Session-based (cookie backed by a `sessions` table), bcrypt for passwords |
+| **Tooling** | Pydantic (validation in backend), ESLint (frontend), Uvicorn (dev server) |
 
 ---
 
 ## Architecture Overview
 
-- **Frontend / backend split**: `frontend/` (React SPA) and `backend/` (Express API) are separate apps. Frontend calls backend over HTTP with `credentials: 'include'` for session cookies.
+- **Frontend / backend split**: `frontend/` (React SPA) and `backend/` (FastAPI API) are separate apps. Frontend calls backend over HTTP with `credentials: 'include'` for session cookies.
 - **Communication**: REST API under `/api/*` (auth, stories, characters, timelines, plots, notes, quotes). CORS configured for frontend origin(s); session cookie used in production (e.g. Vercel ↔ Render).
 - **Responsibilities**:  
   - **Frontend**: UI, routing, theme/language; data via `lib/api.js` (get/post/put/delete).  
-  - **Backend**: Auth (register with email verification, login, logout, me, profile, change password), CRUD for stories/characters/timelines/plots/notes; middleware `requireAuth`; Prisma for DB.
+  - **Backend**: Auth (register with email verification, login, logout, me, profile, change password), CRUD for stories/characters/timelines/plots/notes; FastAPI dependency `require_user_id`; SQLAlchemy for DB.
 
 ---
 
 ## Key Technical Decisions
 
 - **React + Vite** — Fast dev experience and simple build; no Next.js so backend stays fully separate.
-- **Express + TypeScript** — Clear API surface and type-safe backend; session stored in server memory (or configured store) with cookie id.
-- **Session-based auth** — Cookie-backed session (no JWT in the default setup); `requireAuth` checks `req.session.userId`; passwords hashed with bcrypt; validation and normalization (email, username) in auth controller.
+- **FastAPI + SQLAlchemy (async)** — Clear API surface and type-safe backend (Pydantic schemas); session stored in a Postgres `sessions` table, referenced by an opaque cookie id.
+- **Session-based auth** — Cookie-backed session (no JWT); the `require_user_id` dependency checks the `session_id` cookie against the `sessions` table; passwords hashed with bcrypt; validation and normalization (email, username) in the auth router.
 - **Domain model** — Story as the central artifact (plain-text content with `<separator>` tags for chapters); Timeline belongs to Story; Plot and Note belong to Timeline; Character belongs to Story. Quote is global by language.
 
 ---
@@ -92,7 +92,7 @@ User, Story, Timeline, Plot, Content, Quote (and enums such as Visibility).
 - Full-stack architecture with a separate SPA and REST API.
 - Session-based authentication and protected routes.
 - Relational modeling: User → Story → Timeline → Plot; User → Content; Quote as a simple global entity.
-- Use of Prisma (migrations, indexes, relations) and Express middleware.
+- Use of SQLAlchemy + Alembic (migrations, indexes, relations) and FastAPI dependencies.
 - Frontend state (theme, language) and API client with credentials.
 - Structured README and deployment notes (e.g. Vercel + Render).
 
@@ -114,18 +114,18 @@ the-voice-within-the-pages/
 │   │   └── main.jsx
 │   ├── index.html
 │   └── vite.config.js
-├── backend/                  # Express API (TypeScript)
-│   ├── prisma/
-│   │   ├── schema.prisma    # User, Content, Quote, Story, Timeline, Plot
-│   │   └── migrations/
-│   ├── src/
-│   │   ├── controllers/     # auth, story, character, timeline, plot, note, quote
-│   │   ├── lib/             # prisma.ts
-│   │   ├── middleware/     # auth (requireAuth)
-│   │   ├── routes/         # auth, story, character, timeline, plot, note, quote
-│   │   ├── utils/           # passwordUtils
-│   │   └── index.ts        # Express app, CORS, session, routes
-│   └── scripts/             # createUser, seedQuotes
+├── backend/                  # FastAPI API (Python)
+│   ├── alembic/
+│   │   └── versions/        # Migrations (User, Content, Quote, Story, Timeline, Plot, ...)
+│   ├── app/
+│   │   ├── routers/         # auth, stories, characters, timelines, plots, notes, quotes, content
+│   │   ├── models/          # SQLAlchemy models
+│   │   ├── schemas/         # Pydantic request bodies
+│   │   ├── core/            # security (bcrypt), session (cookie + DB), errors
+│   │   ├── email.py         # Resend / SMTP
+│   │   └── main.py          # FastAPI app, CORS, routes
+│   └── scripts/             # create_user.py, seed_quotes.py
+├── backend-old/              # Previous Express/Prisma backend (kept for reference)
 ├── package.json             # Root: dev (concurrently frontend + backend), install:all, build
 ├── DEPLOY_VERCEL.md         # Frontend deploy (Vercel)
 ├── DEPLOY_RENDER.md         # Backend deploy (Render)
@@ -138,7 +138,8 @@ the-voice-within-the-pages/
 
 **Prerequisites**
 
-- Node.js 20+
+- Node.js 20+ (frontend)
+- Python 3.11+ (backend)
 - PostgreSQL (local or hosted, e.g. Neon)
 - npm (or yarn)
 
@@ -153,7 +154,9 @@ npm install
 
 ```bash
 cd backend
-npm install
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
 **Environment variables**
@@ -178,14 +181,12 @@ npm install
 
 ```bash
 cd backend
-npx prisma generate
-npx prisma db push
-# or: npx prisma migrate dev
+alembic upgrade head
 ```
 
 **Run locally**
 
-- Backend: `cd backend && npm run dev` (default http://localhost:5000).
+- Backend: `cd backend && uvicorn app.main:app --reload --port 5000` (default http://localhost:5000).
 - Frontend: `cd frontend && npm run dev` (default http://localhost:5173).
 
 Or from the repo root (if configured):
@@ -231,16 +232,16 @@ This runs frontend and backend concurrently.
 ## Authentication Flow
 
 **Type**  
-Session-based (express-session). The server stores the session and sends a session cookie; no JWT in the default setup.
+Session-based (cookie + Postgres `sessions` table). The server stores the session server-side and sends an opaque session cookie; no JWT in the default setup.
 
 **Flow**
 
 1. **Register** — POST with username, email, password; validation and uniqueness; bcrypt hash; create User (unverified); send 6-digit verification code by email; user must enter code to verify before logging in.
 2. **Verify** — POST with email and code; mark user verified; redirect to login with success message.
 3. **Login** — POST with usernameOrEmail and password; find user; reject if not verified; verify password with bcrypt; set session; return user payload.
-3. **Protected routes** — Middleware `requireAuth` checks `req.session.userId`; if missing, responds 401.
-4. **Logout** — Session destroyed; cookie cleared; 200 with message.
-5. **Profile** — GET /api/auth/me returns current user; PATCH-style endpoints for profile image and change password (current password required).
+3. **Protected routes** — The `require_user_id` FastAPI dependency checks the `session_id` cookie against the `sessions` table; if missing/expired, responds 401.
+4. **Logout** — Session row deleted; cookie cleared; 200 with message.
+5. **Profile** — GET /api/auth/me returns current user; PUT-style endpoints for profile image and change password (current password required).
 
 Frontend uses `credentials: 'include'` so the session cookie is sent with every API request.
 
@@ -255,21 +256,19 @@ Frontend uses `credentials: 'include'` so the session cookie is sent with every 
 - `npm run preview` — Preview production build.
 - `npm run lint` — ESLint.
 
-**Backend (from `backend/`)**
+**Backend (from `backend/`, with the venv active)**
 
-- `npm run dev` — Dev server with tsx watch.
-- `npm run build` — Compile TypeScript to `dist/`.
-- `npm start` — Run `dist/index.js`.
-- `npx prisma generate` — Generate Prisma Client.
-- `npx prisma db push` — Sync schema to DB (no migration files).
-- `npx prisma migrate dev` — Create/apply migrations.
-- `npx prisma studio` — Open Prisma Studio.
+- `uvicorn app.main:app --reload --port 5000` — Dev server with hot reload.
+- `alembic upgrade head` — Apply pending migrations.
+- `alembic revision --autogenerate -m "..."` — Create a new migration from model changes.
+- `python -m scripts.seed_quotes` — Seed the initial quotes.
+- `python -m scripts.create_user` — Create a bootstrap user.
 
 **Root**
 
 - `npm run dev` — Run frontend and backend together (concurrently).
-- `npm run install:all` — Install root, frontend, and backend deps.
-- `npm run build` — Build frontend and backend.
+- `npm run install:all` — Install root/frontend npm deps and create the backend venv.
+- `npm run build` — Build the frontend.
 
 ---
 

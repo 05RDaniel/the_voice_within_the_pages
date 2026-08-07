@@ -38,9 +38,9 @@ Esta guía explica cómo desplegar el backend de "La voz de las páginas" en Ren
 | **Region** | La misma que la base de datos |
 | **Branch** | `main` |
 | **Root Directory** | `backend` |
-| **Runtime** | `Node` |
-| **Build Command** | `npm install && npx prisma generate && npm run build` |
-| **Start Command** | `npm start` |
+| **Runtime** | `Python 3` |
+| **Build Command** | `pip install -r requirements.txt && alembic upgrade head` |
+| **Start Command** | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
 | **Plan** | Free (para desarrollo) |
 
 ### Variables de Entorno
@@ -77,26 +77,14 @@ Si defines `RESEND_API_KEY`, el backend enviará los correos por Resend. En loca
 
 ## Paso 3: Ejecutar las Migraciones
 
-Una vez desplegado el servicio, necesitas ejecutar las migraciones de Prisma:
-
-### Opción A: Usar la Shell de Render
+Las migraciones de Alembic ya se ejecutan automáticamente como parte del **Build Command** (`alembic upgrade head`) en cada despliegue. Si necesitas ejecutarlas manualmente:
 
 1. En el Dashboard, ve a tu Web Service
 2. Haz clic en la pestaña **Shell**
 3. Ejecuta:
    ```bash
-   npx prisma db push
+   alembic upgrade head
    ```
-
-### Opción B: Añadir al Build Command
-
-Modifica el Build Command para incluir las migraciones:
-
-```
-npm install && npx prisma generate && npx prisma db push && npm run build
-```
-
-> **Importante**: Esta opción ejecutará las migraciones en cada despliegue. Úsala solo si estás seguro de que los cambios de esquema son compatibles.
 
 ## Paso 4: Poblar la Base de Datos (Opcional)
 
@@ -105,7 +93,7 @@ Si quieres añadir las citas iniciales:
 1. Accede a la Shell del servicio
 2. Ejecuta:
    ```bash
-   npx ts-node scripts/seedQuotes.ts
+   python -m scripts.seed_quotes
    ```
 
 ## Paso 5: Verificar el Despliegue
@@ -134,19 +122,7 @@ Para que la API use `api.thevoicewithinthepages.es` (recomendado para cookies sa
 
 ## Configuración de CORS
 
-Asegúrate de que el backend acepta peticiones desde el dominio de tu frontend. En `backend/src/index.ts`, actualiza la configuración de CORS:
-
-```typescript
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:5175",
-    "https://tu-frontend-url.com" // Añade tu URL de producción
-  ],
-  credentials: true
-}));
-```
+Asegúrate de que el backend acepta peticiones desde el dominio de tu frontend. En `backend/app/config.py`, la propiedad `allowed_origins` añade automáticamente `FRONTEND_URL`; si necesitas otros orígenes fijos, edita la lista en ese archivo.
 
 ## Estructura de Archivos para Render
 
@@ -156,10 +132,10 @@ Render detectará automáticamente la configuración, pero puedes crear un archi
 services:
   - type: web
     name: la-voz-de-las-paginas-api
-    runtime: node
+    runtime: python
     rootDir: backend
-    buildCommand: npm install && npx prisma generate && npm run build
-    startCommand: npm start
+    buildCommand: pip install -r requirements.txt && alembic upgrade head
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -183,16 +159,7 @@ databases:
 
 1. Revisa los logs en la pestaña **Logs** del servicio
 2. Verifica que todas las variables de entorno estén configuradas
-3. Asegúrate de que el `package.json` tiene los scripts correctos:
-   ```json
-   {
-     "scripts": {
-       "build": "tsc",
-       "start": "node dist/index.js",
-       "dev": "ts-node-dev src/index.ts"
-     }
-   }
-   ```
+3. Asegúrate de que el Build Command instala las dependencias de `requirements.txt` y aplica las migraciones (`pip install -r requirements.txt && alembic upgrade head`), y que el Start Command lanza Uvicorn (`uvicorn app.main:app --host 0.0.0.0 --port $PORT`)
 
 ### Error de conexión a la base de datos
 
@@ -202,9 +169,9 @@ databases:
 
 ### Las migraciones fallan
 
-1. Verifica la sintaxis del esquema de Prisma
+1. Verifica la sintaxis de las migraciones en `backend/alembic/versions/`
 2. Revisa los logs para ver el error específico
-3. Si hay conflictos, considera usar `prisma db push --force-reset` (⚠️ esto borra todos los datos)
+3. Si hay conflictos irreconciliables en un entorno de desarrollo, puedes recrear la base de datos y volver a ejecutar `alembic upgrade head` (⚠️ esto borra todos los datos)
 
 ### El servicio se suspende (plan Free)
 
@@ -222,5 +189,7 @@ En el plan gratuito, los servicios se suspenden tras 15 minutos de inactividad. 
 ## Enlaces Útiles
 
 - [Documentación de Render](https://render.com/docs)
-- [Guía de Node.js en Render](https://render.com/docs/deploy-node-express-app)
-- [Documentación de Prisma](https://www.prisma.io/docs)
+- [Guía de Python (FastAPI) en Render](https://render.com/docs/deploy-fastapi)
+- [Documentación de FastAPI](https://fastapi.tiangolo.com/)
+- [Documentación de SQLAlchemy](https://docs.sqlalchemy.org/)
+- [Documentación de Alembic](https://alembic.sqlalchemy.org/)
